@@ -1,0 +1,58 @@
+Request:
+  type: object
+  properties:
+    id:
+      type: string
+      format: uuid
+    employmentType:
+      type: string
+      example: full-time
+    amount:
+      type: number
+      example: 1000
+    requesterId:
+      type: string
+      format: uuid
+    status:
+      type: string
+      example: in-progress
+    profileId:
+      type: string
+      format: uuid
+    createdAt:
+      type: string
+      format: date-time
+    updatedAt:
+      type: string
+      format: date-time
+CreateRequest:
+  type: object
+  required: [employmentType, amount, requesterId, profileId]
+  properties:
+    employmentType:
+      type: string
+    amount:
+      type: number
+    requesterId:
+      type: string
+      format: uuid
+    status:
+      type: string
+    profileId:
+      type: string
+      format: uuid
+UpdateRequest:
+  type: object
+  properties:
+    employmentType:
+      type: string
+    amount:
+      type: number
+    requesterId:
+      type: string
+      format: uuid
+    status:
+      type: string
+    profileId:
+      type: string
+      format: uuid

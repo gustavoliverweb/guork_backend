@@ -1,0 +1,45 @@
+Assignment:
+  type: object
+  properties:
+    id:
+      type: string
+      format: uuid
+    requestId:
+      type: string
+      format: uuid
+    status:
+      type: string
+      example: assigned
+    assignedId:
+      type: string
+      format: uuid
+    createdAt:
+      type: string
+      format: date-time
+    updatedAt:
+      type: string
+      format: date-time
+CreateAssignment:
+  type: object
+  required: [requestId, assignedId]
+  properties:
+    requestId:
+      type: string
+      format: uuid
+    status:
+      type: string
+      example: assigned
+    assignedId:
+      type: string
+      format: uuid
+UpdateAssignment:
+  type: object
+  properties:
+    requestId:
+      type: string
+      format: uuid
+    status:
+      type: string
+    assignedId:
+      type: string
+      format: uuid

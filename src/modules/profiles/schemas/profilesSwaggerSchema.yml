@@ -1,0 +1,36 @@
+Profile:
+  type: object
+  properties:
+    id:
+      type: string
+      format: uuid
+    name:
+      type: string
+    status:
+      type: string
+      default: available
+    descriptions:
+      type: string
+
+CreateProfile:
+  type: object
+  required:
+    - name
+  properties:
+    name:
+      type: string
+    status:
+      type: string
+      default: available
+    descriptions:
+      type: string
+
+UpdateProfile:
+  type: object
+  properties:
+    name:
+      type: string
+    status:
+      type: string
+    descriptions:
+      type: string
