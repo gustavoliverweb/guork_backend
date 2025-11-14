@@ -85,4 +85,4 @@ if (process.env.NODE_ENV !== 'production') {
   initializeDB();
 }
 
-export default app; // ¡Esto es clave para Vercel!
+module.exports = app;
