@@ -1,6 +1,4 @@
-declare module "../dist/app"; // para TS7016
-
-import app from "../dist/app";
+import app from "../src/app"; // apunta al TS original, no a dist
 import http, { IncomingMessage, ServerResponse } from "http";
 
 type VercelRequest = IncomingMessage;
