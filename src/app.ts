@@ -59,7 +59,6 @@ app.use(`${BASE_PATH}/assignments`, assignmentsRoutes);
 
 // startServer();
 
-// export default app;
 // Initialize database
 const initializeDB = async () => { // Renombramos la función
   try {
