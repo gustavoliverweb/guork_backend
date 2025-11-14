@@ -59,30 +59,6 @@ app.use(`${BASE_PATH}/assignments`, assignmentsRoutes);
 
 // startServer();
 
-// Initialize database
-const initializeDB = async () => { // Renombramos la función
-  try {
-    await sequelize.authenticate();
-    console.log("✅ Database connected successfully");
-  } catch (error) {
-    console.error("❌ Unable to connect to database:", error);
-  }
-};
 
-// Lógica de arranque (SOLO PARA LOCAL)
-if (process.env.NODE_ENV !== 'production') {
-  initializeDB().then(() => {
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-      console.log(
-        `📚 API Docs available at http://localhost:${PORT}${BASE_PATH}/docs`
-      );
-    });
-  });
-} else {
-  // En producción (Vercel), solo inicializamos la DB si es necesario.
-  // Vercel no ejecutará app.listen()
-  initializeDB();
-}
 
 export default app;
