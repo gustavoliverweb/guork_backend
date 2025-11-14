@@ -61,17 +61,14 @@
 
 
 
-import "reflect-metadata";
 import express from "express";
 
 const app = express();
 
-// Health check simple
 app.get("/health", (req, res) => {
-  res.status(200).json({ status: "OK", message: "Server is running" });
+  res.status(200).json({ status: "OK" });
 });
 
-// Manejo de 404 (obligatorio en serverless)
 app.use((req, res) => {
   res.status(404).json({ error: "Not Found", path: req.path });
 });
