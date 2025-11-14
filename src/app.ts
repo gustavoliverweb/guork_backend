@@ -85,4 +85,4 @@ if (process.env.NODE_ENV !== 'production') {
   initializeDB();
 }
 
-module.exports = app;
+export default app;
