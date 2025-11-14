@@ -1,6 +1,6 @@
 import serverless from "serverless-http";
-import app from "./src/app"; // Ruta corregida para el compilador
-import sequelize from "./src/config/database"; // Ruta corregida para el compilador
+import app from "../src/app"; // Ruta corregida para el compilador
+import sequelize from "../src/config/database"; // Ruta corregida para el compilador
 
 // 1. Variable global para almacenar el handler de serverless-http
 // Se crea de forma síncrona.
