@@ -37,26 +37,53 @@ app.use(`${BASE_PATH}/profiles`, profilesRoutes);
 app.use(`${BASE_PATH}/requests`, requestsRoutes);
 app.use(`${BASE_PATH}/assignments`, assignmentsRoutes);
 
+// // Initialize database
+// const startServer = async () => {
+//   try {
+//     // Test database connection
+//     await sequelize.authenticate();
+//     console.log("✅ Database connected successfully");
+//   } catch (error) {
+//     console.error("❌ Unable to connect to database:", error);
+//     console.log("⚠️  Server will start without database connection");
+//   }
+
+//   // Start server regardless of database connection
+//   app.listen(PORT, () => {
+//     console.log(`🚀 Server running on port ${PORT}`);
+//     console.log(
+//       `📚 API Docs available at http://localhost:${PORT}${BASE_PATH}/docs`
+//     );
+//   });
+// };
+
+// startServer();
+
+// export default app;
 // Initialize database
-const startServer = async () => {
+const initializeDB = async () => { // Renombramos la función
   try {
-    // Test database connection
     await sequelize.authenticate();
     console.log("✅ Database connected successfully");
   } catch (error) {
     console.error("❌ Unable to connect to database:", error);
-    console.log("⚠️  Server will start without database connection");
   }
-
-  // Start server regardless of database connection
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(
-      `📚 API Docs available at http://localhost:${PORT}${BASE_PATH}/docs`
-    );
-  });
 };
 
-startServer();
+// Lógica de arranque (SOLO PARA LOCAL)
+if (process.env.NODE_ENV !== 'production') {
+  initializeDB().then(() => {
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(
+        `📚 API Docs available at http://localhost:${PORT}${BASE_PATH}/docs`
+      );
+    });
+  });
+} else {
+  // En producción (Vercel), solo inicializamos la DB si es necesario.
+  // Vercel no ejecutará app.listen()
+  initializeDB();
+}
 
-export default app;
+export default app; // ¡Esto es clave para Vercel!
