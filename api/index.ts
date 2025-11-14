@@ -1,12 +1,11 @@
-// api/index.ts
 import serverless from "serverless-http";
 import app from "../src/app";
 import sequelize from "../src/config/database";
 
 let isDBConnected = false;
 
-// Wrapper que asegura conexión a DB antes de responder
-const handler = serverless(async (req: any, res: any) => {
+// Middleware antes de Express
+app.use(async (req, res, next) => {
   if (!isDBConnected) {
     try {
       await sequelize.authenticate();
@@ -14,12 +13,11 @@ const handler = serverless(async (req: any, res: any) => {
       isDBConnected = true;
     } catch (err) {
       console.error("❌ DB connection failed:", err);
-      // opcional: responder con error
-      // return res.status(500).json({ error: "DB connection failed" });
     }
   }
-
-  return app(req, res);
+  next();
 });
 
+// El handler FINAL (sin envolver nada más)
+export const handler = serverless(app);
 export default handler;
