@@ -1,6 +1,6 @@
 import serverless from "serverless-http";
-import app from "../../src/app";
-import sequelize from "../../src/config/database";
+import app from "./src/app";
+import sequelize from "./src/config/database";
 
 let isInitialized = false;
 let handler: any;
