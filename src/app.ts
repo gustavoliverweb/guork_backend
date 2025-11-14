@@ -60,17 +60,23 @@
 // // startServer();
 
 
-
 import express from "express";
 
 const app = express();
 
+app.get("/", (req, res) => {
+  res.json({ message: "OK desde Vercel + Serverless!" });
+});
+
 app.get("/health", (req, res) => {
-  res.status(200).json({ status: "OK" });
+  res.json({ status: "OK" });
 });
 
 app.use((req, res) => {
-  res.status(404).json({ error: "Not Found", path: req.path });
+  res.status(404).json({
+    error: "Not Found",
+    path: req.path,
+  });
 });
 
 export default app;
