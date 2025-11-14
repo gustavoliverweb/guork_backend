@@ -61,54 +61,19 @@
 
 
 
-// export default app;
-
 import "reflect-metadata";
 import express from "express";
-import dotenv from "dotenv";
-import swaggerUi from "swagger-ui-express";
-import sequelize from "./config/database";
-import { swaggerSpecs } from "./config/swagger";
-import usersRoutes from "./modules/users/usersRoutes";
-import profilesRoutes from "./modules/profiles/profilesRoutes";
-import authRoutes from "./modules/auth/authRoutes";
-import requestsRoutes from "./modules/requests/requestsRoutes";
-import assignmentsRoutes from "./modules/assignments/assignmentsRoutes";
-
-dotenv.config({ quiet: true });
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-const API_NAME = process.env.API_NAME || "api";
-const API_VERSION = process.env.API_VERSION || "v1";
-const BASE_PATH = `/${API_NAME}/${API_VERSION}`;
 
-// Middlewares
-app.use(express.json()); // Dejamos el parser JSON por si acaso
-// app.use(express.urlencoded({ extended: true })); // <-- COMENTAR
-
-// Swagger documentation
-// app.use(`${BASE_PATH}/docs`, swaggerUi.serve, swaggerUi.setup(swaggerSpecs)); // <-- COMENTAR
-
-// Health check
+// Health check simple
 app.get("/health", (req, res) => {
-  res.status(200).json({ status: "OK", message: "Server is running" });
+  res.status(200).json({ status: "OK", message: "Server is running" });
 });
 
-// API Routes - COMENTAR TODAS LAS RUTAS, SOLO PROBAREMOS /health
-// app.use(`${BASE_PATH}/auth`, authRoutes); 
-// app.use(`${BASE_PATH}/users`, usersRoutes);
-// app.use(`${BASE_PATH}/profiles`, profilesRoutes);
-// app.use(`${BASE_PATH}/requests`, requestsRoutes);
-// app.use(`${BASE_PATH}/assignments`, assignmentsRoutes);
-
-// Manejador de 404/Ruta no encontrada (CRÍTICO para serverless)
-// Si ninguna ruta coincide, debemos terminar la respuesta.
-app.use((req, res, next) => {
-  if (!res.headersSent) {
-    res.status(404).json({ error: "Not Found", path: req.path });
-  }
+// Manejo de 404 (obligatorio en serverless)
+app.use((req, res) => {
+  res.status(404).json({ error: "Not Found", path: req.path });
 });
-
 
 export default app;
