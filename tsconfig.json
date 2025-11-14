@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "rootDir": "./",
+    "rootDir": "./src",
     "outDir": "./dist",
     "module": "commonjs",
     "target": "ES2020",
@@ -11,6 +11,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": ["src/**/*", "api/index.ts"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }
