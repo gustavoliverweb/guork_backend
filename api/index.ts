@@ -1,29 +1,25 @@
+// api/index.ts
 import serverless from "serverless-http";
 import app from "../src/app";
 import sequelize from "../src/config/database";
 
-const handler = serverless(app);
+let isDBConnected = false;
 
-// Conexión Fire-and-Forget
-(async () => {
-  try {
-    console.log("Attempting DB connection...");
-    await sequelize.authenticate();
-    console.log("✅ Database connected (fire-and-forget)");
-  } catch (err) {
-    console.error("❌ DB connection failed:", err);
-  }
-})();
-
-// Exporta el handler directamente
-export default async (req: any, res: any) => {
-  // Este wrapper asegura que cualquier error no bloquee la función
-  try {
-    return await handler(req, res);
-  } catch (err) {
-    console.error("Handler error:", err);
-    if (!res.headersSent) {
-      res.status(500).json({ error: "Internal Serverless Error" });
+// Wrapper que asegura conexión a DB antes de responder
+const handler = serverless(async (req: any, res: any) => {
+  if (!isDBConnected) {
+    try {
+      await sequelize.authenticate();
+      console.log("✅ DB connected for this request");
+      isDBConnected = true;
+    } catch (err) {
+      console.error("❌ DB connection failed:", err);
+      // opcional: responder con error
+      // return res.status(500).json({ error: "DB connection failed" });
     }
   }
-};
+
+  return app(req, res);
+});
+
+export default handler;
