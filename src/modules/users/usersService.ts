@@ -48,11 +48,11 @@ export class UserService {
       ...userData,
       role: userData.role || "user",
     });
-    
-      // Asociar perfiles si llegan desde el front
-      if (Array.isArray(data.profiles) && data.profiles.length > 0) {
-        await (user as any).$set("profiles", data.profiles);
-      }
+
+    // Asociar perfiles si llegan desde el front
+    if (Array.isArray(data.profiles) && data.profiles.length > 0) {
+      await (user as any).$set("profiles", data.profiles);
+    }
 
     return user.toJSON() as UserResponse;
   }
@@ -88,6 +88,10 @@ export class UserService {
       ...data,
       birthdate: data.birthdate ? new Date(data.birthdate) : undefined,
     });
+
+    if (Array.isArray(data.profiles)) {
+      await (user as any).$set("profiles", data.profiles);
+    }
     if (!user) {
       throw new Error("User not found");
     }

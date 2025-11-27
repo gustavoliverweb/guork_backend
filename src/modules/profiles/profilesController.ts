@@ -12,6 +12,7 @@ const profilesService = new ProfilesService();
 export const createProfile = async (req: Request, res: Response) => {
   try {
     const validatedData = createProfileSchema.parse(req.body);
+
     const profile = await profilesService.createProfile(validatedData);
     res.status(201).json(profile);
   } catch (error: any) {

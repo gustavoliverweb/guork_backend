@@ -19,6 +19,9 @@ export default class SessionModel extends Model {
   @Column({ type: DataType.TEXT, allowNull: false, unique: true })
   token!: string;
 
+  @Column({ type: DataType.TEXT, allowNull: false, unique: true, defaultValue: "" })
+  tokenPush!: string;
+
   @Column({ type: DataType.TEXT, allowNull: false })
   ip!: string;
 

@@ -66,6 +66,7 @@ class UserRepository {
                     as: "assignments",
                 },
             ],
+            distinct: true,
         });
         return { rows: result.rows, count: result.count };
     }

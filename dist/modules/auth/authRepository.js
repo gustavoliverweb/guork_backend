@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthRepository = void 0;
 const sessionModel_1 = __importDefault(require("./models/sessionModel"));
 class AuthRepository {
-    async createSession(token, ip, userId) {
-        return await sessionModel_1.default.create({ token, ip, userId });
+    async createSession(token, ip, userId, tokenPush) {
+        return await sessionModel_1.default.create({ token, ip, userId, tokenPush });
     }
     async findSessionByToken(token) {
         return await sessionModel_1.default.findOne({ where: { token } });

@@ -1,8 +1,8 @@
 import SessionModel from "./models/sessionModel";
 
 export class AuthRepository {
-  async createSession(token: string, ip: string, userId: string): Promise<SessionModel> {
-    return await SessionModel.create({ token, ip, userId });
+  async createSession(token: string, ip: string, userId: string, tokenPush: String): Promise<SessionModel> {
+    return await SessionModel.create({ token, ip, userId, tokenPush });
   }
 
   async findSessionByToken(token: string): Promise<SessionModel | null> {

@@ -32,7 +32,7 @@ const router = Router();
  *       400:
  *         description: Invalid input
  */
-router.post("/",authMiddleware, createProfile);
+router.post("/", authMiddleware, createProfile);
 /**
  * @swagger
  * /profiles:

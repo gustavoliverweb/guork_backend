@@ -23,6 +23,9 @@ export default class RequestModel extends Model {
   @Column({ type: DataType.TEXT, allowNull: false, defaultValue: "in-progress" })
   status!: string;
 
+  @Column({ type: DataType.TEXT, allowNull: false, defaultValue: "", field: "url_agent" })
+  urlAgent!: string;
+
   @ForeignKey(() => ProfileModel)
   @Column({ type: DataType.UUID, allowNull: false, field: "profile_id" })
   profileId!: string;

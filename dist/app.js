@@ -14,6 +14,7 @@ const profilesRoutes_1 = __importDefault(require("./modules/profiles/profilesRou
 const authRoutes_1 = __importDefault(require("./modules/auth/authRoutes"));
 const requestsRoutes_1 = __importDefault(require("./modules/requests/requestsRoutes"));
 const assignmentsRoutes_1 = __importDefault(require("./modules/assignments/assignmentsRoutes"));
+const cors_1 = __importDefault(require("cors"));
 dotenv_1.default.config({ quiet: true });
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3000;
@@ -23,6 +24,17 @@ const BASE_PATH = `/${API_NAME}/${API_VERSION}`;
 // Middlewares
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
+app.use((0, cors_1.default)({
+    origin: true,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: [
+        "Content-Type",
+        "Authorization",
+        "X-Requested-With",
+        "Accept",
+    ],
+}));
 // Swagger documentation
 app.use(`${BASE_PATH}/docs`, swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_1.swaggerSpecs));
 // Health check

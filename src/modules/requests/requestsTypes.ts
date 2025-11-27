@@ -7,6 +7,7 @@ export interface Request {
   amount: number;
   requesterId: string;
   status: string;
+  urlAgent: String,
   profileId: string;
   requester?: User;
   profile?: Profile;
@@ -15,4 +16,4 @@ export interface Request {
 }
 
 export interface RequestCreation
-  extends Omit<Request, "id" | "createdAt" | "updatedAt" | "requester" | "profile"> {}
+  extends Omit<Request, "id" | "createdAt" | "updatedAt" | "requester" | "profile"> { }

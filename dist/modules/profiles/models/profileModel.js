@@ -36,6 +36,10 @@ __decorate([
     __metadata("design:type", String)
 ], ProfileModel.prototype, "descriptions", void 0);
 __decorate([
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.DECIMAL(10, 2), allowNull: false, defaultValue: 0.0 }),
+    __metadata("design:type", Number)
+], ProfileModel.prototype, "amount", void 0);
+__decorate([
     (0, sequelize_typescript_1.BelongsToMany)(() => userModel_1.default, () => userProfileModel_1.default),
     __metadata("design:type", Array)
 ], ProfileModel.prototype, "users", void 0);

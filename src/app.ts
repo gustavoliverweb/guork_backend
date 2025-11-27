@@ -9,6 +9,7 @@ import profilesRoutes from "./modules/profiles/profilesRoutes";
 import authRoutes from "./modules/auth/authRoutes";
 import requestsRoutes from "./modules/requests/requestsRoutes";
 import assignmentsRoutes from "./modules/assignments/assignmentsRoutes";
+import cors from "cors";
 
 dotenv.config({ quiet: true });
 
@@ -21,6 +22,20 @@ const BASE_PATH = `/${API_NAME}/${API_VERSION}`;
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "X-Requested-With",
+      "Accept",
+    ],
+  })
+);
 
 // Swagger documentation
 app.use(`${BASE_PATH}/docs`, swaggerUi.serve, swaggerUi.setup(swaggerSpecs));

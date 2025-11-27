@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import SessionModel from "../../modules/auth/models/sessionModel";
+import { User } from "../../modules/users/usersTypes";
 
 interface JwtPayload {
-  userId: string;
+  user: User;
   role: string;
 }
 
@@ -34,13 +35,13 @@ export const authMiddleware = async (
     }
 
     // Verify that the session belongs to the user in the token
-    if (session.userId !== decoded.userId) {
+    if (session.userId !== decoded.user.id) {
       res.status(401).json({ message: "Session does not belong to user" });
       return;
     }
 
     // Attach user info to request for use in controllers
-    (req as any).userId = decoded.userId;
+    (req as any).userId = decoded.user.id;
     (req as any).role = decoded.role;
     (req as any).token = token;
 

@@ -42,6 +42,10 @@ __decorate([
     __metadata("design:type", String)
 ], RequestModel.prototype, "status", void 0);
 __decorate([
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.TEXT, allowNull: false, defaultValue: "", field: "url_agent" }),
+    __metadata("design:type", String)
+], RequestModel.prototype, "urlAgent", void 0);
+__decorate([
     (0, sequelize_typescript_1.ForeignKey)(() => profileModel_1.default),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.UUID, allowNull: false, field: "profile_id" }),
     __metadata("design:type", String)

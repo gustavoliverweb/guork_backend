@@ -72,6 +72,9 @@ class UserService {
             ...data,
             birthdate: data.birthdate ? new Date(data.birthdate) : undefined,
         });
+        if (Array.isArray(data.profiles)) {
+            await user.$set("profiles", data.profiles);
+        }
         if (!user) {
             throw new Error("User not found");
         }

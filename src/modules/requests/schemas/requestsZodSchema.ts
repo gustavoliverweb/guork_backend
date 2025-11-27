@@ -6,6 +6,7 @@ export const createRequestSchema = z.object({
   requesterId: z.string().uuid(),
   status: z.string().min(1).optional(),
   profileId: z.string().uuid(),
+  urlAgent: z.string().min(1)
 });
 
 export const updateRequestSchema = z.object({

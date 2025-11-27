@@ -8,6 +8,7 @@ exports.createRequestSchema = zod_1.z.object({
     requesterId: zod_1.z.string().uuid(),
     status: zod_1.z.string().min(1).optional(),
     profileId: zod_1.z.string().uuid(),
+    urlAgent: zod_1.z.string().min(1)
 });
 exports.updateRequestSchema = zod_1.z.object({
     employmentType: zod_1.z.string().min(1).optional(),

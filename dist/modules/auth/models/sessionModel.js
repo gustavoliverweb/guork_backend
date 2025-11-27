@@ -27,6 +27,10 @@ __decorate([
     __metadata("design:type", String)
 ], SessionModel.prototype, "token", void 0);
 __decorate([
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.TEXT, allowNull: false, unique: true, defaultValue: "" }),
+    __metadata("design:type", String)
+], SessionModel.prototype, "tokenPush", void 0);
+__decorate([
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.TEXT, allowNull: false }),
     __metadata("design:type", String)
 ], SessionModel.prototype, "ip", void 0);

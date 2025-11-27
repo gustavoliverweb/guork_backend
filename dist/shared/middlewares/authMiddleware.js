@@ -23,12 +23,12 @@ const authMiddleware = async (req, res, next) => {
             return;
         }
         // Verify that the session belongs to the user in the token
-        if (session.userId !== decoded.userId) {
+        if (session.userId !== decoded.user.id) {
             res.status(401).json({ message: "Session does not belong to user" });
             return;
         }
         // Attach user info to request for use in controllers
-        req.userId = decoded.userId;
+        req.userId = decoded.user.id;
         req.role = decoded.role;
         req.token = token;
         next();

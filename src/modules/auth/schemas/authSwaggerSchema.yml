@@ -1,9 +1,12 @@
 Login:
   type: object
   required:
+    - app
     - email
     - password
   properties:
+    app:
+      type: string
     email:
       type: string
       format: email
