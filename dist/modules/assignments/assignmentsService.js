@@ -9,7 +9,7 @@ class AssignmentsService {
     async createAssignment(data) {
         const record = await this.assignmentsRepository.create({
             ...data,
-            status: data.status || "assigned",
+            status: data.status || "in-progress",
         });
         return record;
     }
@@ -30,6 +30,14 @@ class AssignmentsService {
         if (!record)
             throw new Error("Assignment not found");
         return record;
+    }
+    async getAssignmentByRequesterId(id) {
+        const records = await this.assignmentsRepository.findByRequestId(id);
+        if (!records)
+            throw new Error("Assignment not found");
+        return {
+            rows: records
+        };
     }
     async updateAssignment(id, data) {
         const record = await this.assignmentsRepository.update(id, data);

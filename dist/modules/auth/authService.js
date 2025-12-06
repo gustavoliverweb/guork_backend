@@ -57,7 +57,7 @@ class AuthService {
         // Generar token
         const token = jsonwebtoken_1.default.sign({ userId: user.id }, process.env.JWT_SECRET);
         // Guardar sesión
-        await this.authRepository.createSession(token, ip, user.id, '');
+        await this.authRepository.createSession(token, ip, user.id, "");
         return {
             user: this.userToResponse(user),
             token,
@@ -74,8 +74,31 @@ class AuthService {
         if (!isValid) {
             throw new Error("Invalid credentials");
         }
+        let userData = this.userToResponse(user);
+        delete userData.requests;
+        delete userData.profiles;
+        delete userData.assignments;
         // Generar token
-        const token = jsonwebtoken_1.default.sign({ user }, process.env.JWT_SECRET);
+        const token = jsonwebtoken_1.default.sign({ 'user': userData }, process.env.JWT_SECRET);
+        // Guardar sesión
+        await this.authRepository.createSession(token, ip, user.id, data.token);
+        return {
+            user: this.userToResponse(user),
+            token,
+        };
+    }
+    async loginByGoogle(data, ip) {
+        // Buscar usuario
+        const user = await this.userRepository.findByEmail(data.email);
+        if (!user) {
+            throw new Error("Invalid credentials");
+        }
+        let userData = this.userToResponse(user);
+        delete userData.requests;
+        delete userData.profiles;
+        delete userData.assignments;
+        // Generar token
+        const token = jsonwebtoken_1.default.sign({ 'user': userData }, process.env.JWT_SECRET);
         // Guardar sesión
         await this.authRepository.createSession(token, ip, user.id, data.token);
         return {
@@ -88,6 +111,19 @@ class AuthService {
         if (!deleted) {
             throw new Error("Session not found");
         }
+    }
+    async createPasswordResetRequest(token, userId) {
+        return await this.authRepository.createPasswordResetRequest(token, userId);
+    }
+    async findPasswordResetRequestByToken(token) {
+        return await this.authRepository.findPasswordResetRequestByToken(token);
+    }
+    async deletePasswordResetRequest(token) {
+        const passwordReset = await this.findPasswordResetRequestByToken(token);
+        if (!passwordReset)
+            return false;
+        await passwordReset.destroy();
+        return true;
     }
 }
 exports.AuthService = AuthService;

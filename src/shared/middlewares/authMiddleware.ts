@@ -14,6 +14,7 @@ export const authMiddleware = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    console.log('token');
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -47,6 +48,7 @@ export const authMiddleware = async (
 
     next();
   } catch (error) {
+    console.log(error);
     if (error instanceof jwt.JsonWebTokenError) {
       res.status(401).json({ message: "Invalid token" });
       return;

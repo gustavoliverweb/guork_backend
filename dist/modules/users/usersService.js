@@ -80,6 +80,10 @@ class UserService {
         }
         return user.toJSON();
     }
+    async getUserByEmail(email) {
+        const user = await this.userRepository.findByEmail(email);
+        return user ? user.toJSON() : null;
+    }
     async deleteUser(id) {
         const deleted = await this.userRepository.delete(id);
         if (!deleted) {

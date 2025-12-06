@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { UserController } from "./usersController";
 import { authMiddleware } from "../../shared/middlewares/authMiddleware";
+import upload from "../../shared/middlewares/uploadMiddleware";
 
 const router = Router();
 const userController = new UserController();
@@ -31,7 +32,12 @@ const userController = new UserController();
  *       401:
  *         description: Unauthorized
  */
-router.post("/", authMiddleware, userController.createUser);
+router.post(
+  "/",
+  authMiddleware,
+  upload.single("image"),
+  userController.createUser
+);
 
 /**
  * @swagger

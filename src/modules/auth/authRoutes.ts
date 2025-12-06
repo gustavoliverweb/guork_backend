@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { AuthController } from "./authController";
 import { authMiddleware } from "../../shared/middlewares/authMiddleware";
+import upload from "../../shared/middlewares/uploadMiddleware";
 
 const router = Router();
 const authController = new AuthController();
@@ -27,7 +28,7 @@ const authController = new AuthController();
  *       400:
  *         description: Invalid input or user already exists
  */
-router.post("/register", authController.register);
+router.post("/register", upload.single("image"), authController.register);
 
 /**
  * @swagger
@@ -52,6 +53,7 @@ router.post("/register", authController.register);
  *         description: Invalid credentials
  */
 router.post("/login", authController.login);
+router.post("/loginByGoogle", authController.loginByGoogle);
 
 /**
  * @swagger

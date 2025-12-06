@@ -16,10 +16,10 @@ export default class SessionModel extends Model {
   @Column({ type: DataType.UUID, defaultValue: UUIDV4, allowNull: false })
   id!: string;
 
-  @Column({ type: DataType.TEXT, allowNull: false, unique: true })
+  @Column({ type: DataType.TEXT, allowNull: false, })
   token!: string;
 
-  @Column({ type: DataType.TEXT, allowNull: false, unique: true, defaultValue: "" })
+  @Column({ type: DataType.TEXT, allowNull: false, defaultValue: "" })
   tokenPush!: string;
 
   @Column({ type: DataType.TEXT, allowNull: false })

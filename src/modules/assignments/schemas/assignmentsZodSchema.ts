@@ -3,7 +3,7 @@ import { z } from "zod";
 export const createAssignmentSchema = z.object({
   requestId: z.string().uuid(),
   status: z.string().min(1).optional(),
-  assignedId: z.string().uuid(),
+  assignedId: z.string().uuid().optional(),
 });
 
 export const updateAssignmentSchema = z.object({

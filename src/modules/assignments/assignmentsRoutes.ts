@@ -5,6 +5,7 @@ import {
   getAssignmentById,
   updateAssignment,
   deleteAssignment,
+  getAssignmentByRequesterId,
 } from "./assignmentsController";
 import { authMiddleware } from "../../shared/middlewares/authMiddleware";
 
@@ -76,6 +77,8 @@ router.get("/", authMiddleware, getAllAssignments);
  *         description: Assignment not found
  */
 router.get("/:id", authMiddleware, getAssignmentById);
+
+router.get("/byRequester/:id", authMiddleware, getAssignmentByRequesterId);
 
 /**
  * @swagger

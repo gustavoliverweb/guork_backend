@@ -21,6 +21,7 @@ const createProfile = async (req, res) => {
 exports.createProfile = createProfile;
 const getAllProfiles = async (req, res) => {
     try {
+        console.log('as');
         const pagination = {
             page: Number.parseInt(req.query.page || "1", 10),
             pageSize: Number.parseInt(req.query.pageSize || "10", 10),
@@ -29,6 +30,7 @@ const getAllProfiles = async (req, res) => {
             search: req.query.search || undefined,
             status: req.query.status || undefined,
         };
+        console.log(pagination);
         const result = await profilesService.getAllProfiles(pagination);
         res.json(result);
     }

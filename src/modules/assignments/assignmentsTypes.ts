@@ -5,7 +5,7 @@ export interface Assignment {
   id: string;
   requestId: string;
   status: string;
-  assignedId: string;
+  assignedId?: string;
   request?: Request;
   assigned?: User;
   createdAt?: Date;
@@ -13,4 +13,7 @@ export interface Assignment {
 }
 
 export interface AssignmentCreation
-  extends Omit<Assignment, "id" | "createdAt" | "updatedAt" | "request" | "assigned"> {}
+  extends Omit<
+    Assignment,
+    "id" | "createdAt" | "updatedAt" | "request" | "assigned"
+  > {}

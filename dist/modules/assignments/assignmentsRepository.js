@@ -8,6 +8,7 @@ const assignmentModel_1 = __importDefault(require("./models/assignmentModel"));
 const sequelize_1 = require("sequelize");
 const requestModel_1 = __importDefault(require("../requests/models/requestModel"));
 const userModel_1 = __importDefault(require("../users/models/userModel"));
+const models_1 = require("../../models");
 class AssignmentsRepository {
     async create(data) {
         return await assignmentModel_1.default.create(data);
@@ -53,7 +54,13 @@ class AssignmentsRepository {
                     as: "assigned",
                     attributes: { exclude: ["password"] },
                 },
-                { model: requestModel_1.default },
+                {
+                    model: requestModel_1.default, include: [
+                        {
+                            model: models_1.ProfileModel
+                        }
+                    ]
+                },
             ],
         });
         return { rows: result.rows, count: result.count };
@@ -69,6 +76,45 @@ class AssignmentsRepository {
                 { model: requestModel_1.default },
             ],
         });
+    }
+    async findByRequestId(id) {
+        var resul = await assignmentModel_1.default.findAll({
+            where: {
+                status: 'assigned'
+            },
+            attributes: [
+                'id',
+                [sequelize_1.Sequelize.col('assigned.profile_img'), 'assignedProfileImg'],
+                [sequelize_1.Sequelize.col('assigned.first_name'), 'assignedFirstName'],
+                [sequelize_1.Sequelize.col('assigned.last_name'), 'assignedLastName'],
+                [sequelize_1.Sequelize.col('request.profile.name'), 'profileName'],
+                [sequelize_1.Sequelize.col('request.employment_type'), 'requestEmploymentType'],
+            ],
+            include: [
+                {
+                    model: userModel_1.default,
+                    as: "assigned",
+                    attributes: [],
+                },
+                {
+                    model: requestModel_1.default,
+                    as: 'request',
+                    attributes: [],
+                    where: {
+                        requesterId: id
+                    },
+                    required: true,
+                    include: [
+                        {
+                            model: models_1.ProfileModel,
+                            attributes: [],
+                            as: 'profile',
+                        }
+                    ]
+                },
+            ],
+        });
+        return resul;
     }
     async update(id, data) {
         const record = await assignmentModel_1.default.findByPk(id);

@@ -1,7 +1,13 @@
+import { PasswordResetRequestModel } from "../../models";
 import SessionModel from "./models/sessionModel";
 
 export class AuthRepository {
-  async createSession(token: string, ip: string, userId: string, tokenPush: String): Promise<SessionModel> {
+  async createSession(
+    token: string,
+    ip: string,
+    userId: string,
+    tokenPush: String
+  ): Promise<SessionModel> {
     return await SessionModel.create({ token, ip, userId, tokenPush });
   }
 
@@ -18,5 +24,18 @@ export class AuthRepository {
 
   async deleteUserSessions(userId: string): Promise<number> {
     return await SessionModel.destroy({ where: { userId } });
+  }
+
+  async createPasswordResetRequest(
+    token: string,
+    userId: string
+  ): Promise<PasswordResetRequestModel> {
+    return await PasswordResetRequestModel.create({ token, userId });
+  }
+
+  async findPasswordResetRequestByToken(
+    token: string
+  ): Promise<PasswordResetRequestModel | null> {
+    return await PasswordResetRequestModel.findOne({ where: { token } });
   }
 }

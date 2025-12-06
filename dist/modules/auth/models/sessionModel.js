@@ -23,11 +23,11 @@ __decorate([
     __metadata("design:type", String)
 ], SessionModel.prototype, "id", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.TEXT, allowNull: false, unique: true }),
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.TEXT, allowNull: false, }),
     __metadata("design:type", String)
 ], SessionModel.prototype, "token", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.TEXT, allowNull: false, unique: true, defaultValue: "" }),
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.TEXT, allowNull: false, defaultValue: "" }),
     __metadata("design:type", String)
 ], SessionModel.prototype, "tokenPush", void 0);
 __decorate([

@@ -50,6 +50,17 @@ export const getAssignmentById = async (req: Request, res: Response) => {
   }
 };
 
+export const getAssignmentByRequesterId = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const record = await assignmentsService.getAssignmentByRequesterId(id);
+    res.json(record);
+  } catch (error: any) {
+    res.status(404).json({ error: error.message });
+  }
+};
+
+
 export const updateAssignment = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;

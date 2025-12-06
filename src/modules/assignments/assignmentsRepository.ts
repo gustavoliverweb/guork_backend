@@ -1,9 +1,10 @@
 import AssignmentModel from "./models/assignmentModel";
 import { AssignmentCreation } from "./assignmentsTypes";
 import { PaginationRequest } from "../../shared/types/paginationRequest";
-import { Op, WhereOptions } from "sequelize";
+import { Op, Sequelize, WhereOptions } from "sequelize";
 import RequestModel from "../requests/models/requestModel";
 import UserModel from "../users/models/userModel";
+import { ProfileModel } from "../../models";
 
 export class AssignmentsRepository {
   async create(data: AssignmentCreation): Promise<AssignmentModel> {
@@ -61,7 +62,14 @@ export class AssignmentsRepository {
           as: "assigned",
           attributes: { exclude: ["password"] },
         },
-        { model: RequestModel },
+        {
+          model: RequestModel, include: [
+            {
+              model: ProfileModel
+            }
+
+          ]
+        },
       ],
     });
 
@@ -79,6 +87,47 @@ export class AssignmentsRepository {
         { model: RequestModel },
       ],
     });
+  }
+
+  async findByRequestId(id: string): Promise<AssignmentModel[] | null> {
+    var resul = await AssignmentModel.findAll({
+      where: {
+        status: 'assigned'
+      },
+      attributes: [
+        'id',
+        [Sequelize.col('assigned.profile_img'), 'assignedProfileImg'],
+        [Sequelize.col('assigned.first_name'), 'assignedFirstName'],
+        [Sequelize.col('assigned.last_name'), 'assignedLastName'],
+        [Sequelize.col('request.profile.name'), 'profileName'],
+        [Sequelize.col('request.employment_type'), 'requestEmploymentType'],
+      ],
+      include: [
+        {
+          model: UserModel,
+          as: "assigned",
+
+          attributes: [],
+        },
+        {
+          model: RequestModel,
+          as: 'request',
+          attributes: [],
+          where: {
+            requesterId: id
+          },
+          required: true,
+          include: [
+            {
+              model: ProfileModel,
+              attributes: [],
+              as: 'profile',
+            }
+          ]
+        },
+      ],
+    });
+    return resul;
   }
 
   async update(

@@ -24,6 +24,7 @@ exports.updateUserSchema = zod_1.z.object({
     lastName: zod_1.z.string().min(1).optional(),
     email: zod_1.z.string().email().optional(),
     phone: zod_1.z.string().optional(),
+    password: zod_1.z.string().min(6).optional(),
     dni: zod_1.z.string().optional(),
     birthdate: zod_1.z.string().optional(),
     address: zod_1.z.string().optional(),

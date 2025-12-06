@@ -9,6 +9,9 @@ class UserController {
         this.createUser = async (req, res) => {
             try {
                 const validatedData = usersZodSchema_1.createUserSchema.parse(req.body);
+                if (req.file) {
+                    // Si se ha subido un archivo, asignar la ruta al campo avatarUrl
+                }
                 const user = await this.userService.createUser(validatedData);
                 res.status(201).json(user);
             }

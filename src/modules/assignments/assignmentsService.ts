@@ -19,7 +19,7 @@ export class AssignmentsService {
   ): Promise<AssignmentModel> {
     const record = await this.assignmentsRepository.create({
       ...data,
-      status: data.status || "assigned",
+      status: data.status || "in-progress",
     });
     return record;
   }
@@ -46,6 +46,13 @@ export class AssignmentsService {
     const record = await this.assignmentsRepository.findById(id);
     if (!record) throw new Error("Assignment not found");
     return record;
+  }
+  async getAssignmentByRequesterId(id: string): Promise<{ rows: AssignmentModel[] }> {
+    const records = await this.assignmentsRepository.findByRequestId(id);
+    if (!records) throw new Error("Assignment not found");
+    return {
+      rows: records
+    };
   }
 
   async updateAssignment(

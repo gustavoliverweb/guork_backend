@@ -42,6 +42,7 @@ class ProfilesRepository {
             offset,
             order: [[orderField, orderDirection]],
         });
+        console.log(result);
         return { rows: result.rows, count: result.count };
     }
     async findById(id) {

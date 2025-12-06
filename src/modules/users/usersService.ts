@@ -4,8 +4,6 @@ import { CreateUserInput, UpdateUserInput } from "./schemas/usersZodSchema";
 import { UserCreation, UserResponse } from "./usersTypes";
 import { PaginationRequest } from "../../shared/types/paginationRequest";
 import { PaginationResponse } from "../../shared/types/paginationResponse";
-import { de } from "zod/v4/locales";
-import UserModel from "./models/userModel";
 
 export class UserService {
   private userRepository: UserRepository;
@@ -96,6 +94,11 @@ export class UserService {
       throw new Error("User not found");
     }
     return user.toJSON() as UserResponse;
+  }
+
+  async getUserByEmail(email: string): Promise<UserResponse | null> {
+    const user = await this.userRepository.findByEmail(email);
+    return user ? (user.toJSON() as UserResponse) : null;
   }
 
   async deleteUser(id: string): Promise<void> {

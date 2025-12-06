@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthRepository = void 0;
+const models_1 = require("../../models");
 const sessionModel_1 = __importDefault(require("./models/sessionModel"));
 class AuthRepository {
     async createSession(token, ip, userId, tokenPush) {
@@ -21,6 +22,12 @@ class AuthRepository {
     }
     async deleteUserSessions(userId) {
         return await sessionModel_1.default.destroy({ where: { userId } });
+    }
+    async createPasswordResetRequest(token, userId) {
+        return await models_1.PasswordResetRequestModel.create({ token, userId });
+    }
+    async findPasswordResetRequestByToken(token) {
+        return await models_1.PasswordResetRequestModel.findOne({ where: { token } });
     }
 }
 exports.AuthRepository = AuthRepository;

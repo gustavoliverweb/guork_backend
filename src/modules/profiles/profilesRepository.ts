@@ -50,7 +50,7 @@ export class ProfilesRepository {
       offset,
       order: [[orderField as any, orderDirection]],
     });
-
+    console.log(result);
     return { rows: result.rows, count: result.count };
   }
 

@@ -27,6 +27,7 @@ export class ProfilesService {
   ): Promise<PaginationResponse<Profile>> {
     pagination.page = pagination.page > 0 ? pagination.page : 1;
     pagination.pageSize = pagination.pageSize > 0 ? pagination.pageSize : 10;
+        console.log(pagination);
     const { rows, count } = await this.profilesRepository.findAll(pagination);
 
     const response: PaginationResponse<Profile> = {

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteAssignment = exports.updateAssignment = exports.getAssignmentById = exports.getAllAssignments = exports.createAssignment = void 0;
+exports.deleteAssignment = exports.updateAssignment = exports.getAssignmentByRequesterId = exports.getAssignmentById = exports.getAllAssignments = exports.createAssignment = void 0;
 const assignmentsService_1 = require("./assignmentsService");
 const assignmentsZodSchema_1 = require("./schemas/assignmentsZodSchema");
 const zod_1 = require("zod");
@@ -48,6 +48,17 @@ const getAssignmentById = async (req, res) => {
     }
 };
 exports.getAssignmentById = getAssignmentById;
+const getAssignmentByRequesterId = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const record = await assignmentsService.getAssignmentByRequesterId(id);
+        res.json(record);
+    }
+    catch (error) {
+        res.status(404).json({ error: error.message });
+    }
+};
+exports.getAssignmentByRequesterId = getAssignmentByRequesterId;
 const updateAssignment = async (req, res) => {
     try {
         const { id } = req.params;

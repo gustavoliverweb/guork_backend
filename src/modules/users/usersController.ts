@@ -16,6 +16,11 @@ export class UserController {
   createUser = async (req: Request, res: Response): Promise<void> => {
     try {
       const validatedData = createUserSchema.parse(req.body);
+
+      if (req.file) {
+        // Si se ha subido un archivo, asignar la ruta al campo avatarUrl
+      }
+
       const user = await this.userService.createUser(validatedData);
       res.status(201).json(user);
     } catch (error) {

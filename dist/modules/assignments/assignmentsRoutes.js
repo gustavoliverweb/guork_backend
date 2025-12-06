@@ -68,6 +68,7 @@ router.get("/", authMiddleware_1.authMiddleware, assignmentsController_1.getAllA
  *         description: Assignment not found
  */
 router.get("/:id", authMiddleware_1.authMiddleware, assignmentsController_1.getAssignmentById);
+router.get("/byRequester/:id", authMiddleware_1.authMiddleware, assignmentsController_1.getAssignmentByRequesterId);
 /**
  * @swagger
  * /assignments/{id}:

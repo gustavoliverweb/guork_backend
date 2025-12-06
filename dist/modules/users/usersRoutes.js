@@ -1,8 +1,12 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const usersController_1 = require("./usersController");
 const authMiddleware_1 = require("../../shared/middlewares/authMiddleware");
+const uploadMiddleware_1 = __importDefault(require("../../shared/middlewares/uploadMiddleware"));
 const router = (0, express_1.Router)();
 const userController = new usersController_1.UserController();
 /**
@@ -31,7 +35,7 @@ const userController = new usersController_1.UserController();
  *       401:
  *         description: Unauthorized
  */
-router.post("/", authMiddleware_1.authMiddleware, userController.createUser);
+router.post("/", authMiddleware_1.authMiddleware, uploadMiddleware_1.default.single("image"), userController.createUser);
 /**
  * @swagger
  * /users:

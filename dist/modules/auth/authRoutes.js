@@ -1,8 +1,12 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const authController_1 = require("./authController");
 const authMiddleware_1 = require("../../shared/middlewares/authMiddleware");
+const uploadMiddleware_1 = __importDefault(require("../../shared/middlewares/uploadMiddleware"));
 const router = (0, express_1.Router)();
 const authController = new authController_1.AuthController();
 /**
@@ -27,7 +31,7 @@ const authController = new authController_1.AuthController();
  *       400:
  *         description: Invalid input or user already exists
  */
-router.post("/register", authController.register);
+router.post("/register", uploadMiddleware_1.default.single("image"), authController.register);
 /**
  * @swagger
  * /auth/login:
@@ -51,6 +55,7 @@ router.post("/register", authController.register);
  *         description: Invalid credentials
  */
 router.post("/login", authController.login);
+router.post("/loginByGoogle", authController.loginByGoogle);
 /**
  * @swagger
  * /auth/logout:

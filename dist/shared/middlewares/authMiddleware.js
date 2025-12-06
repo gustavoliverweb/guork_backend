@@ -8,6 +8,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const sessionModel_1 = __importDefault(require("../../modules/auth/models/sessionModel"));
 const authMiddleware = async (req, res, next) => {
     try {
+        console.log('token');
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith("Bearer ")) {
             res.status(401).json({ message: "Token not provided" });
@@ -34,6 +35,7 @@ const authMiddleware = async (req, res, next) => {
         next();
     }
     catch (error) {
+        console.log(error);
         if (error instanceof jsonwebtoken_1.default.JsonWebTokenError) {
             res.status(401).json({ message: "Invalid token" });
             return;

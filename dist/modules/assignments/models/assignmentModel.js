@@ -29,12 +29,16 @@ __decorate([
     __metadata("design:type", String)
 ], AssignmentModel.prototype, "requestId", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.TEXT, allowNull: false, defaultValue: "assigned" }),
+    (0, sequelize_typescript_1.Column)({
+        type: sequelize_typescript_1.DataType.TEXT,
+        allowNull: false,
+        defaultValue: "in-progress",
+    }),
     __metadata("design:type", String)
 ], AssignmentModel.prototype, "status", void 0);
 __decorate([
     (0, sequelize_typescript_1.ForeignKey)(() => userModel_1.default),
-    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.UUID, allowNull: false, field: "assigned_id" }),
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.UUID, allowNull: true, field: "assigned_id" }),
     __metadata("design:type", String)
 ], AssignmentModel.prototype, "assignedId", void 0);
 __decorate([

@@ -1,4 +1,12 @@
-import { Table, Column, Model, DataType, PrimaryKey, ForeignKey, BelongsTo } from "sequelize-typescript";
+import {
+  Table,
+  Column,
+  Model,
+  DataType,
+  PrimaryKey,
+  ForeignKey,
+  BelongsTo,
+} from "sequelize-typescript";
 import { UUIDV4 } from "sequelize";
 import RequestModel from "../../requests/models/requestModel";
 import UserModel from "../../users/models/userModel";
@@ -13,18 +21,22 @@ export default class AssignmentModel extends Model {
   @Column({ type: DataType.UUID, allowNull: false, field: "request_id" })
   requestId!: string;
 
-  @Column({ type: DataType.TEXT, allowNull: false, defaultValue: "assigned" })
+  @Column({
+    type: DataType.TEXT,
+    allowNull: false,
+    defaultValue: "in-progress",
+  })
   status!: string;
 
   @ForeignKey(() => UserModel)
-  @Column({ type: DataType.UUID, allowNull: false, field: "assigned_id" })
-  assignedId!: string;
+  @Column({ type: DataType.UUID, allowNull: true, field: "assigned_id" })
+  assignedId?: string;
 
   @BelongsTo(() => RequestModel)
   request!: RequestModel;
 
   @BelongsTo(() => UserModel, { foreignKey: "assignedId", as: "assigned" })
-  assigned!: UserModel;
+  assigned?: UserModel;
 
   @Column({
     type: DataType.DATE,

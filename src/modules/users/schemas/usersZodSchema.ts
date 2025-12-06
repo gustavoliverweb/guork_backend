@@ -23,6 +23,7 @@ export const updateUserSchema = z.object({
   lastName: z.string().min(1).optional(),
   email: z.string().email().optional(),
   phone: z.string().optional(),
+  password: z.string().min(6).optional(),
   dni: z.string().optional(),
   birthdate: z.string().optional(),
   address: z.string().optional(),
