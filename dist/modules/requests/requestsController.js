@@ -45,7 +45,7 @@ const handleStripeWebhook = async (req, res) => {
         const subscriptionId = event.data.object.parent.subscription_details.subscription;
         const assig = await assignmentsService.getAssignmentBySub(subscriptionId);
         await invoiceService.createInvoices({
-            amount: event.data.object.amount ? (event.data.object.amount / 100) : 0,
+            amount: event.data.object.amount_paid ? (event.data.object.amount_paid / 100) : 0,
             assignedId: assig.id,
             urlInvoice: ''
         });
