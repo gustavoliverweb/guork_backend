@@ -1,0 +1,8 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const invoiceController_1 = require("./invoiceController");
+const authMiddleware_1 = require("../../shared/middlewares/authMiddleware");
+const router = (0, express_1.Router)();
+router.get("/byRequest/:id", authMiddleware_1.authMiddleware, invoiceController_1.getInvoicesByRequesterId);
+exports.default = router;

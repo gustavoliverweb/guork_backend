@@ -88,7 +88,13 @@ export class AssignmentsRepository {
       ],
     });
   }
-
+  async findBySub(subId: string): Promise<AssignmentModel | null> {
+    return await AssignmentModel.findOne({
+      where: {
+        idSuscription: subId
+      }
+    });
+  }
   async findByRequestId(id: string): Promise<AssignmentModel[] | null> {
     var resul = await AssignmentModel.findAll({
       where: {

@@ -37,6 +37,14 @@ __decorate([
     __metadata("design:type", String)
 ], AssignmentModel.prototype, "status", void 0);
 __decorate([
+    (0, sequelize_typescript_1.Column)({
+        type: sequelize_typescript_1.DataType.TEXT,
+        allowNull: false,
+        defaultValue: "",
+    }),
+    __metadata("design:type", String)
+], AssignmentModel.prototype, "idSuscription", void 0);
+__decorate([
     (0, sequelize_typescript_1.ForeignKey)(() => userModel_1.default),
     (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.UUID, allowNull: true, field: "assigned_id" }),
     __metadata("design:type", String)

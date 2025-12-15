@@ -6,6 +6,8 @@ import sequelize from "./config/database";
 import { swaggerSpecs } from "./config/swagger";
 import usersRoutes from "./modules/users/usersRoutes";
 import profilesRoutes from "./modules/profiles/profilesRoutes";
+import invoicesRoutes from "./modules/invoices/invoicesRoutes";
+import { handleStripeWebhook } from "./modules/requests/requestsController"
 import authRoutes from "./modules/auth/authRoutes";
 import requestsRoutes from "./modules/requests/requestsRoutes";
 import assignmentsRoutes from "./modules/assignments/assignmentsRoutes";
@@ -18,7 +20,11 @@ const PORT = process.env.PORT || 3000;
 const API_NAME = process.env.API_NAME || "api";
 const API_VERSION = process.env.API_VERSION || "v1";
 const BASE_PATH = `/${API_NAME}/${API_VERSION}`;
-
+app.post(
+  `${BASE_PATH}/webhooks/stripe`,
+  express.raw({ type: 'application/json' }),
+  handleStripeWebhook
+);
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -51,6 +57,7 @@ app.use(`${BASE_PATH}/users`, usersRoutes);
 app.use(`${BASE_PATH}/profiles`, profilesRoutes);
 app.use(`${BASE_PATH}/requests`, requestsRoutes);
 app.use(`${BASE_PATH}/assignments`, assignmentsRoutes);
+app.use(`${BASE_PATH}/invoices`, invoicesRoutes);
 
 // Initialize database
 const startServer = async () => {

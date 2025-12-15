@@ -20,6 +20,7 @@ export class AssignmentsService {
     const record = await this.assignmentsRepository.create({
       ...data,
       status: data.status || "in-progress",
+      idSuscription: ''
     });
     return record;
   }
@@ -44,6 +45,10 @@ export class AssignmentsService {
 
   async getAssignmentById(id: string): Promise<AssignmentModel> {
     const record = await this.assignmentsRepository.findById(id);
+    if (!record) throw new Error("Assignment not found");
+    return record;
+  } async getAssignmentBySub(idSub: string): Promise<AssignmentModel> {
+    const record = await this.assignmentsRepository.findBySub(idSub);
     if (!record) throw new Error("Assignment not found");
     return record;
   }

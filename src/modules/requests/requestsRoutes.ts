@@ -5,6 +5,8 @@ import {
   getRequestById,
   updateRequest,
   deleteRequest,
+  createIntentPayStripe,
+  createSuscriptionStripe,
 } from "./requestsController";
 import { authMiddleware } from "../../shared/middlewares/authMiddleware";
 
@@ -129,4 +131,6 @@ router.put("/:id", authMiddleware, updateRequest);
  */
 router.delete("/:id", authMiddleware, deleteRequest);
 
+router.post("/createIntentStripe", authMiddleware, createIntentPayStripe);
+router.post("/createSuscriptionStripe", authMiddleware, createSuscriptionStripe);
 export default router;

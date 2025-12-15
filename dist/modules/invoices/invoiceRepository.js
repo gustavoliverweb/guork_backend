@@ -3,22 +3,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AssignmentsRepository = void 0;
-const assignmentModel_1 = __importDefault(require("./models/assignmentModel"));
+exports.InvoicesRepository = void 0;
+const invoiceModel_1 = __importDefault(require("./models/invoiceModel"));
 const sequelize_1 = require("sequelize");
 const requestModel_1 = __importDefault(require("../requests/models/requestModel"));
 const userModel_1 = __importDefault(require("../users/models/userModel"));
 const models_1 = require("../../models");
-class AssignmentsRepository {
+class InvoicesRepository {
     async create(data) {
-        return await assignmentModel_1.default.create(data);
+        return await invoiceModel_1.default.create(data);
     }
     async findAll(pagination) {
         const limit = pagination.pageSize;
         const offset = (pagination.page - 1) * pagination.pageSize;
         const allowedSort = {
             id: "id",
-            status: "status",
             createdAt: "createdAt",
         };
         const orderField = (pagination.sortBy && allowedSort[pagination.sortBy]) || "createdAt";
@@ -29,13 +28,7 @@ class AssignmentsRepository {
             const q = `%${pagination.search}%`;
             andConditions.push({
                 [sequelize_1.Op.or]: [
-                    { status: { [sequelize_1.Op.iLike]: q } },
                     { "$assigned.firstName$": { [sequelize_1.Op.iLike]: q } },
-                    { "$assigned.lastName$": { [sequelize_1.Op.iLike]: q } },
-                    { "$assigned.email$": { [sequelize_1.Op.iLike]: q } },
-                    { "$assigned.dni$": { [sequelize_1.Op.iLike]: q } },
-                    { "$request.employmentType$": { [sequelize_1.Op.iLike]: q } },
-                    { "$request.status$": { [sequelize_1.Op.iLike]: q } },
                 ],
             });
         }
@@ -43,7 +36,7 @@ class AssignmentsRepository {
             andConditions.push({ status: pagination.status });
         }
         where = andConditions.length ? { [sequelize_1.Op.and]: andConditions } : undefined;
-        const result = await assignmentModel_1.default.findAndCountAll({
+        const result = await invoiceModel_1.default.findAndCountAll({
             where,
             limit,
             offset,
@@ -66,7 +59,7 @@ class AssignmentsRepository {
         return { rows: result.rows, count: result.count };
     }
     async findById(id) {
-        return await assignmentModel_1.default.findByPk(id, {
+        return await invoiceModel_1.default.findByPk(id, {
             include: [
                 {
                     model: userModel_1.default,
@@ -77,64 +70,68 @@ class AssignmentsRepository {
             ],
         });
     }
-    async findBySub(subId) {
-        return await assignmentModel_1.default.findOne({
-            where: {
-                idSuscription: subId
-            }
-        });
-    }
     async findByRequestId(id) {
-        var resul = await assignmentModel_1.default.findAll({
-            where: {
-                status: 'assigned'
-            },
-            attributes: [
-                'id',
-                [sequelize_1.Sequelize.col('assigned.profile_img'), 'assignedProfileImg'],
-                [sequelize_1.Sequelize.col('assigned.first_name'), 'assignedFirstName'],
-                [sequelize_1.Sequelize.col('assigned.last_name'), 'assignedLastName'],
-                [sequelize_1.Sequelize.col('request.profile.name'), 'profileName'],
-                [sequelize_1.Sequelize.col('request.employment_type'), 'requestEmploymentType'],
-            ],
+        var resul = await invoiceModel_1.default.findAll({
             include: [
                 {
-                    model: userModel_1.default,
-                    as: "assigned",
-                    attributes: [],
-                },
-                {
-                    model: requestModel_1.default,
-                    as: 'request',
-                    attributes: [],
-                    where: {
-                        requesterId: id
-                    },
-                    required: true,
+                    // A. Incluimos la Contratación (Assignment)
+                    model: models_1.AssignmentModel,
+                    as: "assigned", // 🚨 ASEGÚRATE DE QUE ESTE ALIAS ('assignment') ESTÉ DEFINIDO EN TU InvoiceModel
+                    attributes: [], // No necesitamos campos de Assignment, solo filtrar
+                    required: true, // Debe tener una Assignment
                     include: [
+                        // B. Incluimos la Solicitud (Request)
                         {
-                            model: models_1.ProfileModel,
+                            model: requestModel_1.default,
+                            as: 'request', // 🚨 ASEGÚRATE DE QUE ESTE ALIAS ('request') ESTÉ DEFINIDO EN TU AssignmentModel
                             attributes: [],
-                            as: 'profile',
+                            where: {
+                                requesterId: id // 👈 4. FILTRO CLAVE: Solo Requests de este usuario 'id'
+                            },
+                            required: true, // Debe tener un Request que cumpla la condición
+                            include: [
+                                {
+                                    model: models_1.ProfileModel,
+                                    attributes: [],
+                                    as: 'profile',
+                                }
+                            ]
+                        },
+                        {
+                            model: userModel_1.default,
+                            as: 'assigned',
+                            attributes: [],
                         }
                     ]
                 },
+            ],
+            attributes: [
+                'id',
+                'amount',
+                'createdAt',
+                'dueDate',
+                'urlInvoice',
+                [sequelize_1.Sequelize.col('assigned.assigned.profile_img'), 'assignedProfileImg'],
+                [sequelize_1.Sequelize.col('assigned.assigned.first_name'), 'assignedFirstName'],
+                [sequelize_1.Sequelize.col('assigned.assigned.last_name'), 'assignedLastName'],
+                [sequelize_1.Sequelize.col('assigned.request.profile.name'), 'profileName'],
+                [sequelize_1.Sequelize.col('assigned.request.employment_type'), 'requestEmploymentType'],
             ],
         });
         return resul;
     }
     async update(id, data) {
-        const record = await assignmentModel_1.default.findByPk(id);
+        const record = await invoiceModel_1.default.findByPk(id);
         if (!record)
             return null;
         return await record.update(data);
     }
     async delete(id) {
-        const record = await assignmentModel_1.default.findByPk(id);
+        const record = await invoiceModel_1.default.findByPk(id);
         if (!record)
             return false;
         await record.destroy();
         return true;
     }
 }
-exports.AssignmentsRepository = AssignmentsRepository;
+exports.InvoicesRepository = InvoicesRepository;

@@ -11,6 +11,8 @@ const database_1 = __importDefault(require("./config/database"));
 const swagger_1 = require("./config/swagger");
 const usersRoutes_1 = __importDefault(require("./modules/users/usersRoutes"));
 const profilesRoutes_1 = __importDefault(require("./modules/profiles/profilesRoutes"));
+const invoicesRoutes_1 = __importDefault(require("./modules/invoices/invoicesRoutes"));
+const requestsController_1 = require("./modules/requests/requestsController");
 const authRoutes_1 = __importDefault(require("./modules/auth/authRoutes"));
 const requestsRoutes_1 = __importDefault(require("./modules/requests/requestsRoutes"));
 const assignmentsRoutes_1 = __importDefault(require("./modules/assignments/assignmentsRoutes"));
@@ -21,6 +23,7 @@ const PORT = process.env.PORT || 3000;
 const API_NAME = process.env.API_NAME || "api";
 const API_VERSION = process.env.API_VERSION || "v1";
 const BASE_PATH = `/${API_NAME}/${API_VERSION}`;
+app.post(`${BASE_PATH}/webhooks/stripe`, express_1.default.raw({ type: 'application/json' }), requestsController_1.handleStripeWebhook);
 // Middlewares
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
@@ -47,6 +50,7 @@ app.use(`${BASE_PATH}/users`, usersRoutes_1.default);
 app.use(`${BASE_PATH}/profiles`, profilesRoutes_1.default);
 app.use(`${BASE_PATH}/requests`, requestsRoutes_1.default);
 app.use(`${BASE_PATH}/assignments`, assignmentsRoutes_1.default);
+app.use(`${BASE_PATH}/invoices`, invoicesRoutes_1.default);
 // Initialize database
 const startServer = async () => {
     try {

@@ -6,9 +6,11 @@ exports.createAssignmentSchema = zod_1.z.object({
     requestId: zod_1.z.string().uuid(),
     status: zod_1.z.string().min(1).optional(),
     assignedId: zod_1.z.string().uuid().optional(),
+    idSuscription: zod_1.z.string().optional(),
 });
 exports.updateAssignmentSchema = zod_1.z.object({
     requestId: zod_1.z.string().uuid().optional(),
     status: zod_1.z.string().min(1).optional(),
     assignedId: zod_1.z.string().uuid().optional(),
+    idSuscription: zod_1.z.string().optional(),
 });

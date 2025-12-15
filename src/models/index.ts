@@ -5,6 +5,7 @@ import ProfileModel from "../modules/profiles/models/profileModel";
 import UserProfileModel from "../modules/users/models/userProfileModel";
 import RequestModel from "../modules/requests/models/requestModel";
 import AssignmentModel from "../modules/assignments/models/assignmentModel";
+import InvoiceModel from "../modules/invoices/models/invoiceModel";
 
 export {
   UserModel,
@@ -14,6 +15,7 @@ export {
   UserProfileModel,
   RequestModel,
   AssignmentModel,
+  InvoiceModel
 };
 
 export const models = [
@@ -23,5 +25,5 @@ export const models = [
   ProfileModel,
   UserProfileModel,
   RequestModel,
-  AssignmentModel,
+  AssignmentModel, InvoiceModel
 ];

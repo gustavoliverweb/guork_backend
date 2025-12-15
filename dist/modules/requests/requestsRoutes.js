@@ -118,4 +118,6 @@ router.put("/:id", authMiddleware_1.authMiddleware, requestsController_1.updateR
  *         description: Request not found
  */
 router.delete("/:id", authMiddleware_1.authMiddleware, requestsController_1.deleteRequest);
+router.post("/createIntentStripe", authMiddleware_1.authMiddleware, requestsController_1.createIntentPayStripe);
+router.post("/createSuscriptionStripe", authMiddleware_1.authMiddleware, requestsController_1.createSuscriptionStripe);
 exports.default = router;
