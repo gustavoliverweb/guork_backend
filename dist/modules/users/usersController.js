@@ -4,6 +4,7 @@ exports.UserController = void 0;
 const usersService_1 = require("./usersService");
 const usersZodSchema_1 = require("./schemas/usersZodSchema");
 const zod_1 = require("zod");
+const mailChimpService_1 = require("../../shared/services/mailChimpService");
 class UserController {
     constructor() {
         this.createUser = async (req, res) => {
@@ -97,6 +98,7 @@ class UserController {
             }
         };
         this.userService = new usersService_1.UserService();
+        this.mandrill = new mailChimpService_1.MailChimpService();
     }
 }
 exports.UserController = UserController;

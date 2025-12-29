@@ -35,12 +35,17 @@ export class AssignmentsRepository {
       andConditions.push({
         [Op.or]: [
           { status: { [Op.iLike]: q } },
-          { "$assigned.firstName$": { [Op.iLike]: q } },
-          { "$assigned.lastName$": { [Op.iLike]: q } },
+          { "$assigned.first_name$": { [Op.iLike]: q } },
+          { "$assigned.last_name$": { [Op.iLike]: q } },
           { "$assigned.email$": { [Op.iLike]: q } },
           { "$assigned.dni$": { [Op.iLike]: q } },
-          { "$request.employmentType$": { [Op.iLike]: q } },
+          { "$request.employment_type$": { [Op.iLike]: q } },
           { "$request.status$": { [Op.iLike]: q } },
+          { "$request.profile.name$": { [Op.iLike]: q } },
+          { "$request.requester.first_name$": { [Op.iLike]: q } },
+          { "$request.requester.last_name$": { [Op.iLike]: q } },
+          { "$request.requester.email$": { [Op.iLike]: q } },
+          { "$request.requester.dni$": { [Op.iLike]: q } },
         ],
       });
     }
@@ -63,14 +68,23 @@ export class AssignmentsRepository {
           attributes: { exclude: ["password"] },
         },
         {
-          model: RequestModel, include: [
+          model: RequestModel,
+          as: "request",
+          include: [
             {
-              model: ProfileModel
-            }
-
-          ]
+              model: ProfileModel,
+              as: "profile",
+            },
+            {
+              model: UserModel,
+              as: "requester",
+              attributes: { exclude: ["password"] },
+            },
+          ],
         },
       ],
+      distinct: true,
+      subQuery: false,
     });
 
     return { rows: result.rows, count: result.count };
@@ -91,22 +105,15 @@ export class AssignmentsRepository {
   async findBySub(subId: string): Promise<AssignmentModel | null> {
     return await AssignmentModel.findOne({
       where: {
-        idSuscription: subId
-      }
-    });
-  }
-  async findByRequestId(id: string): Promise<AssignmentModel[] | null> {
-    var resul = await AssignmentModel.findAll({
-      where: {
-        status: 'assigned'
+        idSuscription: subId,
       },
       attributes: [
-        'id',
-        [Sequelize.col('assigned.profile_img'), 'assignedProfileImg'],
-        [Sequelize.col('assigned.first_name'), 'assignedFirstName'],
-        [Sequelize.col('assigned.last_name'), 'assignedLastName'],
-        [Sequelize.col('request.profile.name'), 'profileName'],
-        [Sequelize.col('request.employment_type'), 'requestEmploymentType'],
+        "id",
+        [Sequelize.col("assigned.profile_img"), "assignedProfileImg"],
+        [Sequelize.col("assigned.first_name"), "assignedFirstName"],
+        [Sequelize.col("assigned.last_name"), "assignedLastName"],
+        [Sequelize.col("request.profile.name"), "profileName"],
+        [Sequelize.col("request.employment_type"), "requestEmploymentType"],
       ],
       include: [
         {
@@ -117,19 +124,55 @@ export class AssignmentsRepository {
         },
         {
           model: RequestModel,
-          as: 'request',
+          as: "request",
+          attributes: [],
+          required: true,
+          include: [
+            {
+              model: ProfileModel,
+              attributes: [],
+              as: "profile",
+            },
+          ],
+        },
+      ],
+    });
+  }
+  async findByRequestId(id: string): Promise<AssignmentModel[] | null> {
+    var resul = await AssignmentModel.findAll({
+      where: {
+        status: "assigned",
+      },
+      attributes: [
+        "id",
+        [Sequelize.col("assigned.profile_img"), "assignedProfileImg"],
+        [Sequelize.col("assigned.first_name"), "assignedFirstName"],
+        [Sequelize.col("assigned.last_name"), "assignedLastName"],
+        [Sequelize.col("request.profile.name"), "profileName"],
+        [Sequelize.col("request.employment_type"), "requestEmploymentType"],
+      ],
+      include: [
+        {
+          model: UserModel,
+          as: "assigned",
+
+          attributes: [],
+        },
+        {
+          model: RequestModel,
+          as: "request",
           attributes: [],
           where: {
-            requesterId: id
+            requesterId: id,
           },
           required: true,
           include: [
             {
               model: ProfileModel,
               attributes: [],
-              as: 'profile',
-            }
-          ]
+              as: "profile",
+            },
+          ],
         },
       ],
     });

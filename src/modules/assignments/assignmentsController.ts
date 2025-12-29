@@ -6,13 +6,22 @@ import {
 } from "./schemas/assignmentsZodSchema";
 import { ZodError } from "zod";
 import { PaginationRequest } from "../../shared/types/paginationRequest";
+import { MailChimpService } from "../../shared/services/mailChimpService";
+import { UserService } from "../users/usersService";
+import { RequestsService } from "../requests/requestsService";
 
 const assignmentsService = new AssignmentsService();
-
+const mandrill = new MailChimpService();
+const userService = new UserService();
+const requestService = new RequestsService();
 export const createAssignment = async (req: Request, res: Response) => {
   try {
     const validatedData = createAssignmentSchema.parse(req.body);
     const record = await assignmentsService.createAssignment(validatedData);
+    const reqRecord = await requestService.getRequestById(validatedData.requestId);
+    const userRecord = await userService.getUserById(reqRecord.requesterId);
+
+    mandrill.sendAssignementSuccess(userRecord.email, '', 'Contratación creada con éxito');
     res.status(201).json(record);
   } catch (error: any) {
     if (error instanceof ZodError) {

@@ -54,7 +54,8 @@ router.post("/register", upload.single("image"), authController.register);
  */
 router.post("/login", authController.login);
 router.post("/loginByGoogle", authController.loginByGoogle);
-
+router.post("/resetPasswordEmail", authController.resetPasswordCtrl);
+router.post("/resetPasswordChange", authController.updatePasswordCtrl);
 /**
  * @swagger
  * /auth/logout:

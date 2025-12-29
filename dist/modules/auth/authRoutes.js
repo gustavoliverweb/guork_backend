@@ -56,6 +56,8 @@ router.post("/register", uploadMiddleware_1.default.single("image"), authControl
  */
 router.post("/login", authController.login);
 router.post("/loginByGoogle", authController.loginByGoogle);
+router.post("/resetPasswordEmail", authController.resetPasswordCtrl);
+router.post("/resetPasswordChange", authController.updatePasswordCtrl);
 /**
  * @swagger
  * /auth/logout:

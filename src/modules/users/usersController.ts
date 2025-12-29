@@ -5,12 +5,14 @@ import { ZodError } from "zod";
 import { PaginationRequest } from "../../shared/types/paginationRequest";
 import { PaginationResponse } from "../../shared/types/paginationResponse";
 import { UserResponse } from "./usersTypes";
+import { MailChimpService } from "../../shared/services/mailChimpService";
 
 export class UserController {
   private userService: UserService;
-
+  private mandrill: MailChimpService;
   constructor() {
     this.userService = new UserService();
+    this.mandrill = new MailChimpService();
   }
 
   createUser = async (req: Request, res: Response): Promise<void> => {

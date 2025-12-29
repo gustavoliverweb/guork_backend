@@ -41,11 +41,11 @@ class UserRepository {
         if (pagination.role && pagination.role.trim() !== "") {
             andConditions.push({ role: pagination.role });
         }
-        if (pagination.profile && pagination.profile.trim() !== "") {
-            andConditions.push({
-                "$profile.name$": { [sequelize_1.Op.iLike]: `%${pagination.profile}%` },
-            });
-        }
+        // if (pagination.profile && pagination.profile.trim() !== "") {
+        //   andConditions.push({
+        //     "$profile.name$": { [Op.iLike]: `%${pagination.profile}%` },
+        //   });
+        // }
         where = andConditions.length ? { [sequelize_1.Op.and]: andConditions } : undefined;
         const result = await userModel_1.default.findAndCountAll({
             where,
@@ -55,7 +55,9 @@ class UserRepository {
             include: [
                 {
                     model: profileModel_1.default,
+                    as: "profiles",
                     through: { attributes: [] },
+                    where: pagination.profile ? { id: pagination.profile } : undefined,
                 },
                 {
                     model: requestModel_1.default,

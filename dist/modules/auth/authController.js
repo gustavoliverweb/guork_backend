@@ -11,6 +11,7 @@ const zod_1 = require("zod");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const usersService_1 = require("../users/usersService");
+const mailChimpService_1 = require("../../shared/services/mailChimpService");
 class AuthController {
     constructor() {
         this.register = async (req, res) => {
@@ -23,6 +24,7 @@ class AuthController {
                     // Si se ha subido un archivo, asignar la ruta al campo avatarUrl
                 }
                 const result = await this.authService.register(validatedData, ip);
+                this.mandrill.sendRegisterSuccess(req.body.email, '', 'Proceso de registro éxitoso');
                 res.status(201).json(result);
             }
             catch (error) {
@@ -39,7 +41,9 @@ class AuthController {
         };
         this.login = async (req, res) => {
             try {
-                console.log("asd");
+                if (!req.body.token) {
+                    req.body.token = "";
+                }
                 const validatedData = authZodSchema_1.loginSchema.parse(req.body);
                 const ip = req.headers["x-forwarded-for"] ||
                     req.socket.remoteAddress ||
@@ -113,15 +117,15 @@ class AuthController {
                 const token = jsonwebtoken_1.default.sign({ email }, process.env.JWT_SECRET);
                 console.log("Token de restablecimiento de contraseña generado:", token);
                 // Guardar el token en la base de datos
-                await this.authService.createPasswordResetRequest(user.id, token);
-                const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${token}`;
-                console.log("Reset URL:", resetUrl);
+                await this.authService.createPasswordResetRequest(token, user.id);
                 // Enviar el email de restablecimiento de contraseña
+                await this.mandrill.sendPasswordResetRequest(email, `https://panel.guork.es/forgotPassword?token=${token}`, 'Restablece tu contraseña');
                 res
                     .status(200)
                     .json({ message: "Email de restablecimiento de contraseña enviado" });
             }
             catch (error) {
+                console.log(error);
                 res.status(500).json({
                     message: "Error al enviar el request de restablecimiento de contraseña",
                 });
@@ -129,18 +133,18 @@ class AuthController {
         };
         this.updatePasswordCtrl = async (req, res) => {
             try {
-                const { email, newPassword, token } = req.body;
-                if (!email || !newPassword || !token) {
+                const { newPassword, token } = req.body;
+                if (!newPassword || !token) {
                     res
                         .status(400)
-                        .json({ message: "Email, nueva contraseña y token son requeridos" });
+                        .json({ message: "Nueva contraseña y token son requeridos" });
                     return;
                 }
-                const user = await this.userService.getUserByEmail(email);
-                if (!user) {
-                    res.status(404).json({ message: "Usuario no encontrado" });
-                    return;
-                }
+                // const user = await this.userService.getUserByEmail(email);
+                // if (!user) {
+                //   res.status(404).json({ message: "Usuario no encontrado" });
+                //   return;
+                // }
                 const passwordReset = await this.authService.findPasswordResetRequestByToken(token);
                 if (!passwordReset) {
                     res
@@ -148,13 +152,13 @@ class AuthController {
                         .json({ message: "Token de restablecimiento no encontrado" });
                     return;
                 }
-                if (passwordReset.userId !== user.id) {
-                    res.status(403).json({ message: "Token no válido para este usuario" });
-                    return;
-                }
+                // if (passwordReset.userId !== user.id) {
+                //   res.status(403).json({ message: "Token no válido para este usuario" });
+                //   return;
+                // }
                 await this.authService.deletePasswordResetRequest(token);
                 const passwordHash = await bcrypt_1.default.hash(newPassword, 10);
-                await this.userService.updateUser(user.id, {
+                await this.userService.updateUser(passwordReset.userId, {
                     password: passwordHash,
                 });
                 // Enviar confirmación de cambio de contraseña
@@ -166,6 +170,7 @@ class AuthController {
         };
         this.authService = new authService_1.AuthService();
         this.userService = new usersService_1.UserService();
+        this.mandrill = new mailChimpService_1.MailChimpService();
     }
 }
 exports.AuthController = AuthController;

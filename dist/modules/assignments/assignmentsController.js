@@ -4,11 +4,20 @@ exports.deleteAssignment = exports.updateAssignment = exports.getAssignmentByReq
 const assignmentsService_1 = require("./assignmentsService");
 const assignmentsZodSchema_1 = require("./schemas/assignmentsZodSchema");
 const zod_1 = require("zod");
+const mailChimpService_1 = require("../../shared/services/mailChimpService");
+const usersService_1 = require("../users/usersService");
+const requestsService_1 = require("../requests/requestsService");
 const assignmentsService = new assignmentsService_1.AssignmentsService();
+const mandrill = new mailChimpService_1.MailChimpService();
+const userService = new usersService_1.UserService();
+const requestService = new requestsService_1.RequestsService();
 const createAssignment = async (req, res) => {
     try {
         const validatedData = assignmentsZodSchema_1.createAssignmentSchema.parse(req.body);
         const record = await assignmentsService.createAssignment(validatedData);
+        const reqRecord = await requestService.getRequestById(validatedData.requestId);
+        const userRecord = await userService.getUserById(reqRecord.requesterId);
+        mandrill.sendAssignementSuccess(userRecord.email, '', 'Contratación creada con éxito');
         res.status(201).json(record);
     }
     catch (error) {

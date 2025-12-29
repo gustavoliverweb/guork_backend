@@ -48,11 +48,11 @@ export class UserRepository {
       andConditions.push({ role: pagination.role });
     }
 
-    if (pagination.profile && pagination.profile.trim() !== "") {
-      andConditions.push({
-        "$profile.name$": { [Op.iLike]: `%${pagination.profile}%` },
-      });
-    }
+    // if (pagination.profile && pagination.profile.trim() !== "") {
+    //   andConditions.push({
+    //     "$profile.name$": { [Op.iLike]: `%${pagination.profile}%` },
+    //   });
+    // }
 
     where = andConditions.length ? { [Op.and]: andConditions } : undefined;
 
@@ -64,7 +64,9 @@ export class UserRepository {
       include: [
         {
           model: ProfileModel,
+          as: "profiles",
           through: { attributes: [] },
+          where: pagination.profile ? { id: pagination.profile } : undefined,
         },
         {
           model: RequestModel,

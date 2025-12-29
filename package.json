@@ -29,6 +29,7 @@
   "keywords": [],
   "description": "",
   "dependencies": {
+    "@mailchimp/mailchimp_transactional": "^1.0.59",
     "@types/cors": "^2.8.19",
     "@types/multer": "^2.0.0",
     "bcrypt": "^6.0.0",
