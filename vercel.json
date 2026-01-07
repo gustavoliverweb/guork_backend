@@ -1,12 +1,17 @@
 {
   "version": 2,
-  "functions": {
-    "dist/app.js": {
-      "includeFiles": "dist/assets/**",
-      "memory": 1024,
-      "maxDuration": 30
+  "builds": [
+    {
+      "src": "dist/app.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "assets/**",
+          "dist/assets/**"
+        ]
+      }
     }
-  },
+  ],
   "routes": [
     {
       "src": "/(.*)",
