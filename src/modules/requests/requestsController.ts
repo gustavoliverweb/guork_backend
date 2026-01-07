@@ -10,6 +10,7 @@ import { StripeService } from "../../shared/services/stripeService";
 import { AssignmentsService } from "../assignments/assignmentsService";
 import { InvoicesService } from "../invoices/invoiceService";
 import ejs from "ejs";
+import path from "path";
 import puppeteer from "puppeteer-core";
 import { BunnyService } from "../../shared/services/bunnyService";
 import moment from "moment";
@@ -95,7 +96,7 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
     let urlInvoice = "";
 
     ejs.renderFile(
-      "./src/assets/invoice-template/invoice.ejs",
+      path.resolve(__dirname, "../../assets/invoice-template/invoice.ejs"),
       data,
       async (err: any, html: string) => {
         if (err) {

@@ -11,6 +11,7 @@ const stripeService_1 = require("../../shared/services/stripeService");
 const assignmentsService_1 = require("../assignments/assignmentsService");
 const invoiceService_1 = require("../invoices/invoiceService");
 const ejs_1 = __importDefault(require("ejs"));
+const path_1 = __importDefault(require("path"));
 const puppeteer_core_1 = __importDefault(require("puppeteer-core"));
 const bunnyService_1 = require("../../shared/services/bunnyService");
 const moment_1 = __importDefault(require("moment"));
@@ -83,7 +84,7 @@ const handleStripeWebhook = async (req, res) => {
             total: amount,
         };
         let urlInvoice = "";
-        ejs_1.default.renderFile("./src/assets/invoice-template/invoice.ejs", data, async (err, html) => {
+        ejs_1.default.renderFile(path_1.default.resolve(__dirname, "../../assets/invoice-template/invoice.ejs"), data, async (err, html) => {
             if (err) {
                 console.log("Error al renderizar el template:", err);
                 res.status(500).send({ error: err });
