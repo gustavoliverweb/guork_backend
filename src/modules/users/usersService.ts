@@ -19,6 +19,8 @@ export class UserService {
       throw new Error("Email already exists");
     }
 
+    const profiles = JSON.parse(data.profiles || "[]");
+
     // Verificar si el DNI ya existe
     if (data.dni) {
       const existingDni = await this.userRepository.findByDni(data.dni);
@@ -48,8 +50,8 @@ export class UserService {
     });
 
     // Asociar perfiles si llegan desde el front
-    if (Array.isArray(data.profiles) && data.profiles.length > 0) {
-      await (user as any).$set("profiles", data.profiles);
+    if (Array.isArray(profiles) && profiles.length > 0) {
+      await (user as any).$set("profiles", profiles);
     }
 
     return user.toJSON() as UserResponse;

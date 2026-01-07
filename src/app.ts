@@ -7,7 +7,7 @@ import { swaggerSpecs } from "./config/swagger";
 import usersRoutes from "./modules/users/usersRoutes";
 import profilesRoutes from "./modules/profiles/profilesRoutes";
 import invoicesRoutes from "./modules/invoices/invoicesRoutes";
-import { handleStripeWebhook } from "./modules/requests/requestsController"
+import { handleStripeWebhook } from "./modules/requests/requestsController";
 import authRoutes from "./modules/auth/authRoutes";
 import requestsRoutes from "./modules/requests/requestsRoutes";
 import assignmentsRoutes from "./modules/assignments/assignmentsRoutes";
@@ -22,7 +22,7 @@ const API_VERSION = process.env.API_VERSION || "v1";
 const BASE_PATH = `/${API_NAME}/${API_VERSION}`;
 app.post(
   `${BASE_PATH}/webhooks/stripe`,
-  express.raw({ type: 'application/json' }),
+  express.raw({ type: "application/json" }),
   handleStripeWebhook
 );
 // Middlewares
@@ -42,6 +42,12 @@ app.use(
     ],
   })
 );
+
+// Simple per-request logger (method + path)
+app.use((req, _res, next) => {
+  console.log(`➡️  ${req.method} ${req.originalUrl}`);
+  next();
+});
 
 // Swagger documentation
 app.use(`${BASE_PATH}/docs`, swaggerUi.serve, swaggerUi.setup(swaggerSpecs));

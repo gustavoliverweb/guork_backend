@@ -8,154 +8,175 @@ import { AssignmentModel, ProfileModel } from "../../models";
 import { InvoiceCreation } from "./invoiceTypes";
 
 export class InvoicesRepository {
-    async create(data: InvoiceCreation): Promise<InvoiceModel> {
-        return await InvoiceModel.create(data);
+  async create(data: InvoiceCreation): Promise<InvoiceModel> {
+    return await InvoiceModel.create(data);
+  }
+
+  async findAll(
+    pagination: PaginationRequest
+  ): Promise<{ rows: InvoiceModel[]; count: number }> {
+    const limit = pagination.pageSize;
+    const offset = (pagination.page - 1) * pagination.pageSize;
+    const allowedSort: Record<string, string> = {
+      id: "id",
+      createdAt: "createdAt",
+    };
+    const orderField =
+      (pagination.sortBy && allowedSort[pagination.sortBy]) || "createdAt";
+    const orderDirection = (pagination.sortOrder || "desc").toUpperCase() as
+      | "ASC"
+      | "DESC";
+
+    let where: WhereOptions | undefined;
+    const andConditions: WhereOptions[] = [];
+
+    if (pagination.search && pagination.search.trim() !== "") {
+      const q = `%${pagination.search}%`;
+      andConditions.push({
+        [Op.or]: [
+          { "$assignment.assigned.first_name$": { [Op.iLike]: q } },
+          { "$assignment.assigned.last_name$": { [Op.iLike]: q } },
+          { "$assignment.assigned.email$": { [Op.iLike]: q } },
+          { "$assignment.request.requester.first_name$": { [Op.iLike]: q } },
+          { "$assignment.request.requester.last_name$": { [Op.iLike]: q } },
+          { "$assignment.request.requester.email$": { [Op.iLike]: q } },
+        ],
+      });
     }
 
-    async findAll(
-        pagination: PaginationRequest
-    ): Promise<{ rows: InvoiceModel[]; count: number }> {
-        const limit = pagination.pageSize;
-        const offset = (pagination.page - 1) * pagination.pageSize;
-        const allowedSort: Record<string, string> = {
-            id: "id",
-            createdAt: "createdAt",
-        };
-        const orderField =
-            (pagination.sortBy && allowedSort[pagination.sortBy]) || "createdAt";
-        const orderDirection = (pagination.sortOrder || "desc").toUpperCase() as
-            | "ASC"
-            | "DESC";
+    where = andConditions.length ? { [Op.and]: andConditions } : undefined;
 
-        let where: WhereOptions | undefined;
-        const andConditions: WhereOptions[] = [];
+    const result = await InvoiceModel.findAndCountAll({
+      where,
 
-        if (pagination.search && pagination.search.trim() !== "") {
-            const q = `%${pagination.search}%`;
-            andConditions.push({
-                [Op.or]: [
-
-                    { "$assigned.firstName$": { [Op.iLike]: q } },
-
-                ],
-            });
-        }
-
-        if (pagination.status && pagination.status.trim() !== "") {
-            andConditions.push({ status: pagination.status });
-        }
-
-        where = andConditions.length ? { [Op.and]: andConditions } : undefined;
-
-        const result = await InvoiceModel.findAndCountAll({
-            where,
-
-            limit,
-            offset,
-            order: [[orderField as any, orderDirection]],
-            include: [
+      limit,
+      offset,
+      order: [[orderField as any, orderDirection]],
+      include: [
+        {
+          model: AssignmentModel,
+          as: "assignment",
+          include: [
+            {
+              model: RequestModel,
+              as: "request",
+              include: [
                 {
-                    model: UserModel,
-                    as: "assigned",
-                    attributes: { exclude: ["password"] },
+                  model: UserModel,
+                  as: "requester",
+                  attributes: { exclude: ["password"] },
                 },
+              ],
+            },
+            {
+              model: UserModel,
+              as: "assigned",
+              attributes: { exclude: ["password"] },
+            },
+          ],
+        },
+      ],
+      distinct: true,
+    });
+
+    return { rows: result.rows, count: result.count };
+  }
+
+  async findById(id: string): Promise<InvoiceModel | null> {
+    return await InvoiceModel.findByPk(id, {
+      include: [
+        {
+          model: UserModel,
+          as: "assigned",
+          attributes: { exclude: ["password"] },
+        },
+        { model: RequestModel },
+      ],
+    });
+  }
+
+  async findByRequestId(id: string): Promise<InvoiceModel[] | null> {
+    var resul = await InvoiceModel.findAll({
+      // 👈 1. Empezamos en InvoiceModel
+
+      include: [
+        {
+          // A. Incluimos la Contratación (Assignment)
+          model: AssignmentModel,
+          as: "assignment", // 🚨 ASEGÚRATE DE QUE ESTE ALIAS ('assignment') ESTÉ DEFINIDO EN TU InvoiceModel
+          attributes: [], // No necesitamos campos de Assignment, solo filtrar
+          required: true, // Debe tener una Assignment
+
+          include: [
+            // B. Incluimos la Solicitud (Request)
+            {
+              model: RequestModel,
+              as: "request", // 🚨 ASEGÚRATE DE QUE ESTE ALIAS ('request') ESTÉ DEFINIDO EN TU AssignmentModel
+              attributes: [],
+              where: {
+                requesterId: id, // 👈 4. FILTRO CLAVE: Solo Requests de este usuario 'id'
+              },
+              required: true, // Debe tener un Request que cumpla la condición
+
+              include: [
                 {
-                    model: RequestModel, include: [
-                        {
-                            model: ProfileModel
-                        }
-
-                    ]
+                  model: ProfileModel,
+                  attributes: [],
+                  as: "profile",
                 },
-            ],
-        });
+              ],
+            },
 
-        return { rows: result.rows, count: result.count };
-    }
+            {
+              model: UserModel,
+              as: "assigned",
+              attributes: [],
+            },
+          ],
+        },
+      ],
 
-    async findById(id: string): Promise<InvoiceModel | null> {
-        return await InvoiceModel.findByPk(id, {
-            include: [
-                {
-                    model: UserModel,
-                    as: "assigned",
-                    attributes: { exclude: ["password"] },
-                },
-                { model: RequestModel },
-            ],
-        });
-    }
+      attributes: [
+        "id",
+        "amount",
+        "createdAt",
+        "dueDate",
+        "urlInvoice",
+        [
+          Sequelize.col("assignment.assigned.profile_img"),
+          "assignedProfileImg",
+        ],
+        [Sequelize.col("assignment.assigned.first_name"), "assignedFirstName"],
+        [Sequelize.col("assignment.assigned.last_name"), "assignedLastName"],
+        [Sequelize.col("assignment.request.profile.name"), "profileName"],
+        [
+          Sequelize.col("assignment.request.employment_type"),
+          "requestEmploymentType",
+        ],
+      ],
+    });
+    return resul;
+  }
 
-    async findByRequestId(id: string): Promise<InvoiceModel[] | null> {
-        var resul = await InvoiceModel.findAll({ // 👈 1. Empezamos en InvoiceModel
+  async findLastInvoice(): Promise<InvoiceModel | null> {
+    return await InvoiceModel.findOne({
+      order: [["createdAt", "DESC"]],
+    });
+  }
 
-            include: [
-                {
-                    // A. Incluimos la Contratación (Assignment)
-                    model: AssignmentModel,
-                    as: "assigned", // 🚨 ASEGÚRATE DE QUE ESTE ALIAS ('assignment') ESTÉ DEFINIDO EN TU InvoiceModel
-                    attributes: [], // No necesitamos campos de Assignment, solo filtrar
-                    required: true, // Debe tener una Assignment
+  async update(
+    id: string,
+    data: Partial<InvoiceCreation>
+  ): Promise<InvoiceModel | null> {
+    const record = await InvoiceModel.findByPk(id);
+    if (!record) return null;
+    return await record.update(data);
+  }
 
-                    include: [
-                        // B. Incluimos la Solicitud (Request)
-                        {
-                            model: RequestModel,
-                            as: 'request', // 🚨 ASEGÚRATE DE QUE ESTE ALIAS ('request') ESTÉ DEFINIDO EN TU AssignmentModel
-                            attributes: [],
-                            where: {
-                                requesterId: id // 👈 4. FILTRO CLAVE: Solo Requests de este usuario 'id'
-                            },
-                            required: true, // Debe tener un Request que cumpla la condición
-
-                            include: [
-
-                                {
-                                    model: ProfileModel,
-                                    attributes: [],
-                                    as: 'profile',
-                                }
-                            ]
-                        },
-
-                        {
-                            model: UserModel,
-                            as: 'assigned',
-                            attributes: [],
-                        }
-                    ]
-                },
-            ],
-
-            attributes: [
-                'id',
-                'amount',
-                'createdAt',
-                'dueDate',
-                'urlInvoice',
-                [Sequelize.col('assigned.assigned.profile_img'), 'assignedProfileImg'],
-                [Sequelize.col('assigned.assigned.first_name'), 'assignedFirstName'],
-                [Sequelize.col('assigned.assigned.last_name'), 'assignedLastName'],
-                [Sequelize.col('assigned.request.profile.name'), 'profileName'],
-                [Sequelize.col('assigned.request.employment_type'), 'requestEmploymentType'],
-            ],
-        });
-        return resul;
-    }
-
-    async update(
-        id: string,
-        data: Partial<InvoiceCreation>
-    ): Promise<InvoiceModel | null> {
-        const record = await InvoiceModel.findByPk(id);
-        if (!record) return null;
-        return await record.update(data);
-    }
-
-    async delete(id: string): Promise<boolean> {
-        const record = await InvoiceModel.findByPk(id);
-        if (!record) return false;
-        await record.destroy();
-        return true;
-    }
+  async delete(id: string): Promise<boolean> {
+    const record = await InvoiceModel.findByPk(id);
+    if (!record) return false;
+    await record.destroy();
+    return true;
+  }
 }

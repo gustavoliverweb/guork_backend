@@ -23,7 +23,7 @@ const PORT = process.env.PORT || 3000;
 const API_NAME = process.env.API_NAME || "api";
 const API_VERSION = process.env.API_VERSION || "v1";
 const BASE_PATH = `/${API_NAME}/${API_VERSION}`;
-app.post(`${BASE_PATH}/webhooks/stripe`, express_1.default.raw({ type: 'application/json' }), requestsController_1.handleStripeWebhook);
+app.post(`${BASE_PATH}/webhooks/stripe`, express_1.default.raw({ type: "application/json" }), requestsController_1.handleStripeWebhook);
 // Middlewares
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
@@ -38,6 +38,11 @@ app.use((0, cors_1.default)({
         "Accept",
     ],
 }));
+// Simple per-request logger (method + path)
+app.use((req, _res, next) => {
+    console.log(`➡️  ${req.method} ${req.originalUrl}`);
+    next();
+});
 // Swagger documentation
 app.use(`${BASE_PATH}/docs`, swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_1.swaggerSpecs));
 // Health check

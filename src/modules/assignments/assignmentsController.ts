@@ -18,10 +18,16 @@ export const createAssignment = async (req: Request, res: Response) => {
   try {
     const validatedData = createAssignmentSchema.parse(req.body);
     const record = await assignmentsService.createAssignment(validatedData);
-    const reqRecord = await requestService.getRequestById(validatedData.requestId);
+    const reqRecord = await requestService.getRequestById(
+      validatedData.requestId
+    );
     const userRecord = await userService.getUserById(reqRecord.requesterId);
 
-    mandrill.sendAssignementSuccess(userRecord.email, '', 'Contratación creada con éxito');
+    mandrill.sendAssignementSuccess(
+      userRecord.email,
+      "",
+      "Contratación creada con éxito"
+    );
     res.status(201).json(record);
   } catch (error: any) {
     if (error instanceof ZodError) {
@@ -59,7 +65,10 @@ export const getAssignmentById = async (req: Request, res: Response) => {
   }
 };
 
-export const getAssignmentByRequesterId = async (req: Request, res: Response) => {
+export const getAssignmentByRequesterId = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const { id } = req.params;
     const record = await assignmentsService.getAssignmentByRequesterId(id);
@@ -68,7 +77,6 @@ export const getAssignmentByRequesterId = async (req: Request, res: Response) =>
     res.status(404).json({ error: error.message });
   }
 };
-
 
 export const updateAssignment = async (req: Request, res: Response) => {
   try {

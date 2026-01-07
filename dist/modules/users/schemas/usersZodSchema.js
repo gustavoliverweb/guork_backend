@@ -16,7 +16,7 @@ exports.createUserSchema = zod_1.z.object({
     dniImg: zod_1.z.string().optional(),
     profileImg: zod_1.z.string().optional(),
     role: zod_1.z.enum(["user", "admin", "expert"]).optional(),
-    profiles: zod_1.z.array(zod_1.z.string().uuid()).optional(),
+    profiles: zod_1.z.string().optional(),
 });
 // Schema de validación para actualización de usuario
 exports.updateUserSchema = zod_1.z.object({
@@ -32,7 +32,7 @@ exports.updateUserSchema = zod_1.z.object({
     dniImg: zod_1.z.string().optional(),
     profileImg: zod_1.z.string().optional(),
     role: zod_1.z.enum(["user", "admin", "expert"]).optional(),
-    profiles: zod_1.z.array(zod_1.z.string().uuid()).optional(),
+    profiles: zod_1.z.string().optional(),
 });
 // Schema de validación para login
 exports.loginSchema = zod_1.z.object({

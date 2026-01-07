@@ -6,13 +6,16 @@ import { PaginationRequest } from "../../shared/types/paginationRequest";
 import { PaginationResponse } from "../../shared/types/paginationResponse";
 import { UserResponse } from "./usersTypes";
 import { MailChimpService } from "../../shared/services/mailChimpService";
+import { BunnyService } from "../../shared/services/bunnyService";
 
 export class UserController {
   private userService: UserService;
   private mandrill: MailChimpService;
+  private bunny: BunnyService;
   constructor() {
     this.userService = new UserService();
     this.mandrill = new MailChimpService();
+    this.bunny = new BunnyService();
   }
 
   createUser = async (req: Request, res: Response): Promise<void> => {
@@ -20,7 +23,12 @@ export class UserController {
       const validatedData = createUserSchema.parse(req.body);
 
       if (req.file) {
-        // Si se ha subido un archivo, asignar la ruta al campo avatarUrl
+        const uploadResult = await this.bunny.upload(
+          `users/profile-picture/${Date.now()}_${req.file.originalname}`,
+          req.file.buffer,
+          req.file.mimetype
+        );
+        validatedData.profileImg = uploadResult.publicUrl;
       }
 
       const user = await this.userService.createUser(validatedData);
@@ -80,6 +88,19 @@ export class UserController {
     try {
       const { id } = req.params;
       const validatedData = updateUserSchema.parse(req.body);
+
+      if (req.file) {
+        if (validatedData.profileImg) {
+          await this.bunny.delete(validatedData.profileImg ?? "");
+        }
+
+        const uploadResult = await this.bunny.upload(
+          `users/profile-picture/${Date.now()}_${req.file.originalname}`,
+          req.file.buffer,
+          req.file.mimetype
+        );
+        validatedData.profileImg = uploadResult.publicUrl;
+      }
       const user = await this.userService.updateUser(id, validatedData);
       res.status(200).json(user);
     } catch (error) {

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Presupuesto</title>
+    <style>
+      :root {
+        --text: #222;
+        --muted: #6b7280;
+        --border: #e5e7eb;
+        --soft: #f5f6f8;
+        --dark: #2d2f34;
+        --accent: #111827;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+          "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+        color: var(--text);
+      }
+      body {
+        background: #fff;
+        padding: 32px;
+      }
+
+      .page {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 24px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .brand img {
+        height: 55px;
+        width: auto;
+        object-fit: contain;
+      }
+      .title {
+        text-align: right;
+      }
+      .title h1 {
+        margin: 0;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        font-size: 40px;
+        color: var(--accent);
+      }
+      .title .number {
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .cols {
+        margin-top: 20px;
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 16px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px 16px;
+      }
+      .kv {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px 16px;
+        font-size: 14px;
+      }
+      .kv .label {
+        color: var(--muted);
+      }
+      .kv .value {
+        font-weight: 500;
+      }
+      .due {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .due .label {
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .due .value {
+        font-weight: 700;
+        font-size: 16px;
+      }
+
+      .section-title {
+        margin: 28px 0 10px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      thead th {
+        background: var(--dark);
+        color: #fff;
+        font-weight: 600;
+        text-align: left;
+        font-size: 13px;
+        padding: 10px 12px;
+      }
+      tbody td {
+        padding: 12px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+        font-size: 14px;
+      }
+      tbody tr:last-child td {
+        border-bottom: none;
+      }
+      .right {
+        text-align: right;
+      }
+
+      .totals {
+        margin-top: 36px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 12px;
+      }
+      .totals .summary {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px 16px;
+        width: 800px;
+      }
+      .totals .row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+        padding: 6px 0;
+      }
+      .totals .row .label {
+        color: var(--muted);
+      }
+      .totals .row.total {
+        border-top: 1px dashed var(--border);
+        margin-top: 6px;
+        padding-top: 12px;
+        font-weight: 700;
+      }
+
+      .notes {
+        margin-top: 32px;
+      }
+      .notes .label {
+        color: var(--muted);
+        font-size: 13px;
+        margin-bottom: 6px;
+      }
+      .notes .content {
+        color: #4b5563;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+      .company {
+        font-size: 13px;
+        line-height: 1.35;
+      }
+      .company strong {
+        font-size: 14px;
+        color: var(--accent);
+      }
+
+      .w-15 {
+        width: 15%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="header">
+        <div class="brand">
+          <img src="<%= logo %>" alt="Logo" />
+          <div class="company">
+            <strong>GUORK VENTURES, LLC</strong><br />
+            1111B S Governors Ave STE 40911. Dover, Delaware 19904, Estados
+            Unidos.<br />
+            https://guork.es/ <br />
+            NIF: 30-1464282
+          </div>
+        </div>
+        <div class="title">
+          <h1>FACTURA</h1>
+          <div class="number"># <%= purchaseOrder %></div>
+        </div>
+      </div>
+
+      <div class="cols">
+        <div class="card">
+          <div class="company">
+            <div class="muted" style="margin-bottom: 6px">Cobrar a:</div>
+            <strong>www.wetaca.com</strong><br />
+            WETACA.<br />
+            NIF: B87052007<br />
+            Calle de la Resina 34 - 28021 Madrid.<br />
+            info@wetaca.com
+          </div>
+        </div>
+        <div class="card">
+          <div class="kv">
+            <div class="label">Fecha:</div>
+            <div class="value"><%= issueDate %></div>
+            <div class="label">Fecha de vencimiento:</div>
+            <div class="value"><%= dueDate %></div>
+            <div class="label">Orden de Compra:</div>
+            <div class="value"><%= purchaseOrder %></div>
+          </div>
+          <div
+            class="due"
+            style="
+              margin-top: 10px;
+              background: var(--soft);
+              border: 1px solid var(--border);
+              border-radius: 8px;
+              padding: 10px 12px;
+            "
+          >
+            <div class="label">Saldo Adeudado:</div>
+            <div class="value">USD <%= balance %></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">&nbsp;</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Artículo</th>
+            <th class="right">Cantidad</th>
+            <th class="right">Tasa</th>
+            <th class="right">Importe</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <strong
+                >Contratación y administración de un empleado en LATAM (Tarifa
+                mensual)</strong
+              >
+            </td>
+            <td class="right"><%= quantity %></td>
+            <td class="right w-15">USD <%= unit %></td>
+            <td class="right w-15">USD <%= subtotal %></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="totals">
+        <div class="summary">
+          <div class="row">
+            <div class="label">Subtotal:</div>
+            <div>USD <%= subtotal %></div>
+          </div>
+          <div class="row">
+            <div class="label">Impuesto (<%= taxRate %>%):</div>
+            <div>USD <%= taxAmount %></div>
+          </div>
+          <div class="row total">
+            <div>Total:</div>
+            <div>USD <%= total %></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="notes">
+        <div class="label">Notas:</div>
+        <div class="content">
+          Gracias por confiar en Guork para el crecimiento de su empresa.
+          Apreciamos su preferencia y quedamos a su disposición para cualquier
+          consulta o soporte adicional. Es un placer acompañarle en la
+          construcción de equipos de alto rendimiento.
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

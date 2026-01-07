@@ -24,22 +24,37 @@ __decorate([
     __metadata("design:type", String)
 ], InvoiceModel.prototype, "id", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.DECIMAL(10, 2), allowNull: false, }),
+    (0, sequelize_typescript_1.Column)({
+        type: sequelize_typescript_1.DataType.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
+        defaultValue: 1,
+        field: "purchase_order",
+    }),
+    __metadata("design:type", Number)
+], InvoiceModel.prototype, "purchaseOrder", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.DECIMAL(10, 2), allowNull: false }),
     __metadata("design:type", String)
 ], InvoiceModel.prototype, "amount", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.TEXT, allowNull: false, defaultValue: '' }),
+    (0, sequelize_typescript_1.Column)({
+        type: sequelize_typescript_1.DataType.TEXT,
+        allowNull: false,
+        defaultValue: "",
+        field: "url_invoice",
+    }),
     __metadata("design:type", String)
 ], InvoiceModel.prototype, "urlInvoice", void 0);
 __decorate([
     (0, sequelize_typescript_1.ForeignKey)(() => models_1.AssignmentModel),
-    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.UUID, allowNull: false, }),
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.UUID, allowNull: false, field: "assignment_id" }),
     __metadata("design:type", String)
-], InvoiceModel.prototype, "assignedId", void 0);
+], InvoiceModel.prototype, "assignmentId", void 0);
 __decorate([
     (0, sequelize_typescript_1.BelongsTo)(() => models_1.AssignmentModel),
     __metadata("design:type", models_1.AssignmentModel)
-], InvoiceModel.prototype, "assigned", void 0);
+], InvoiceModel.prototype, "assignment", void 0);
 __decorate([
     (0, sequelize_typescript_1.Column)({
         type: sequelize_typescript_1.DataType.DATE,
@@ -53,12 +68,12 @@ __decorate([
     (0, sequelize_typescript_1.Column)({
         type: sequelize_typescript_1.DataType.VIRTUAL,
         get() {
-            const creationDate = this.getDataValue('createdAt');
+            const creationDate = this.getDataValue("createdAt");
             if (creationDate) {
-                return (0, moment_1.default)(creationDate).add(1, 'month').toDate();
+                return (0, moment_1.default)(creationDate).add(1, "month").toDate();
             }
             return null;
-        }
+        },
     }),
     __metadata("design:type", Date)
 ], InvoiceModel.prototype, "dueDate", void 0);

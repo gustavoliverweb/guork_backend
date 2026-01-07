@@ -12,7 +12,7 @@ class InvoicesService {
         });
         return record;
     }
-    async getAllInvoicess(pagination) {
+    async getAllInvoices(pagination) {
         pagination.page = pagination.page > 0 ? pagination.page : 1;
         pagination.pageSize = pagination.pageSize > 0 ? pagination.pageSize : 10;
         const { rows, count } = await this.invoicesRepository.findAll(pagination);
@@ -30,12 +30,18 @@ class InvoicesService {
             throw new Error("Invoices not found");
         return record;
     }
+    async getLastInvoice() {
+        const record = await this.invoicesRepository.findLastInvoice();
+        if (!record)
+            throw new Error("Invoices not found");
+        return record;
+    }
     async getInvoicesByRequesterId(id) {
         const records = await this.invoicesRepository.findByRequestId(id);
         if (!records)
             throw new Error("Invoices not found");
         return {
-            rows: records
+            rows: records,
         };
     }
     async updateInvoices(id, data) {

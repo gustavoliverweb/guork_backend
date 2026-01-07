@@ -14,7 +14,7 @@ class BunnyService {
     }
     url(path) {
         const p = path.replace(/^\/+/, "");
-        return `https://${this.host}/${this.zone}/${p}`;
+        return `${this.host}/${this.zone}/${p}`;
     }
     getPublicUrl(path) {
         if (!this.cdn)
@@ -23,6 +23,7 @@ class BunnyService {
         return `${this.cdn}/${p}`;
     }
     async upload(path, data, contentType) {
+        console.log(this.url(path));
         const res = await fetch(this.url(path), {
             method: "PUT",
             headers: {
@@ -31,11 +32,17 @@ class BunnyService {
             },
             body: typeof data === "string" ? data : new Uint8Array(data),
         });
+        console.log(res);
         if (!res.ok)
             throw new Error(`Upload failed: ${res.status}`);
-        return { url: this.url(path), publicUrl: this.getPublicUrl(path) };
+        return {
+            url: this.url(path),
+            publicUrl: this.getPublicUrl(path),
+            path: path,
+        };
     }
     async download(path) {
+        path = path.replace(this.cdn + "/", "");
         const res = await fetch(this.url(path), {
             method: "GET",
             headers: { AccessKey: this.accessKey },
@@ -46,10 +53,12 @@ class BunnyService {
         return Buffer.from(ab);
     }
     async delete(path) {
+        path = path.replace(this.cdn + "/", "");
         const res = await fetch(this.url(path), {
             method: "DELETE",
             headers: { AccessKey: this.accessKey },
         });
+        console.log(res);
         if (!res.ok)
             throw new Error(`Delete failed: ${res.status}`);
     }

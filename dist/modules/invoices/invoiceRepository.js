@@ -28,12 +28,14 @@ class InvoicesRepository {
             const q = `%${pagination.search}%`;
             andConditions.push({
                 [sequelize_1.Op.or]: [
-                    { "$assigned.firstName$": { [sequelize_1.Op.iLike]: q } },
+                    { "$assignment.assigned.first_name$": { [sequelize_1.Op.iLike]: q } },
+                    { "$assignment.assigned.last_name$": { [sequelize_1.Op.iLike]: q } },
+                    { "$assignment.assigned.email$": { [sequelize_1.Op.iLike]: q } },
+                    { "$assignment.request.requester.first_name$": { [sequelize_1.Op.iLike]: q } },
+                    { "$assignment.request.requester.last_name$": { [sequelize_1.Op.iLike]: q } },
+                    { "$assignment.request.requester.email$": { [sequelize_1.Op.iLike]: q } },
                 ],
             });
-        }
-        if (pagination.status && pagination.status.trim() !== "") {
-            andConditions.push({ status: pagination.status });
         }
         where = andConditions.length ? { [sequelize_1.Op.and]: andConditions } : undefined;
         const result = await invoiceModel_1.default.findAndCountAll({
@@ -43,18 +45,29 @@ class InvoicesRepository {
             order: [[orderField, orderDirection]],
             include: [
                 {
-                    model: userModel_1.default,
-                    as: "assigned",
-                    attributes: { exclude: ["password"] },
-                },
-                {
-                    model: requestModel_1.default, include: [
+                    model: models_1.AssignmentModel,
+                    as: "assignment",
+                    include: [
                         {
-                            model: models_1.ProfileModel
-                        }
-                    ]
+                            model: requestModel_1.default,
+                            as: "request",
+                            include: [
+                                {
+                                    model: userModel_1.default,
+                                    as: "requester",
+                                    attributes: { exclude: ["password"] },
+                                },
+                            ],
+                        },
+                        {
+                            model: userModel_1.default,
+                            as: "assigned",
+                            attributes: { exclude: ["password"] },
+                        },
+                    ],
                 },
             ],
+            distinct: true,
         });
         return { rows: result.rows, count: result.count };
     }
@@ -72,53 +85,65 @@ class InvoicesRepository {
     }
     async findByRequestId(id) {
         var resul = await invoiceModel_1.default.findAll({
+            // 👈 1. Empezamos en InvoiceModel
             include: [
                 {
                     // A. Incluimos la Contratación (Assignment)
                     model: models_1.AssignmentModel,
-                    as: "assigned", // 🚨 ASEGÚRATE DE QUE ESTE ALIAS ('assignment') ESTÉ DEFINIDO EN TU InvoiceModel
+                    as: "assignment", // 🚨 ASEGÚRATE DE QUE ESTE ALIAS ('assignment') ESTÉ DEFINIDO EN TU InvoiceModel
                     attributes: [], // No necesitamos campos de Assignment, solo filtrar
                     required: true, // Debe tener una Assignment
                     include: [
                         // B. Incluimos la Solicitud (Request)
                         {
                             model: requestModel_1.default,
-                            as: 'request', // 🚨 ASEGÚRATE DE QUE ESTE ALIAS ('request') ESTÉ DEFINIDO EN TU AssignmentModel
+                            as: "request", // 🚨 ASEGÚRATE DE QUE ESTE ALIAS ('request') ESTÉ DEFINIDO EN TU AssignmentModel
                             attributes: [],
                             where: {
-                                requesterId: id // 👈 4. FILTRO CLAVE: Solo Requests de este usuario 'id'
+                                requesterId: id, // 👈 4. FILTRO CLAVE: Solo Requests de este usuario 'id'
                             },
                             required: true, // Debe tener un Request que cumpla la condición
                             include: [
                                 {
                                     model: models_1.ProfileModel,
                                     attributes: [],
-                                    as: 'profile',
-                                }
-                            ]
+                                    as: "profile",
+                                },
+                            ],
                         },
                         {
                             model: userModel_1.default,
-                            as: 'assigned',
+                            as: "assigned",
                             attributes: [],
-                        }
-                    ]
+                        },
+                    ],
                 },
             ],
             attributes: [
-                'id',
-                'amount',
-                'createdAt',
-                'dueDate',
-                'urlInvoice',
-                [sequelize_1.Sequelize.col('assigned.assigned.profile_img'), 'assignedProfileImg'],
-                [sequelize_1.Sequelize.col('assigned.assigned.first_name'), 'assignedFirstName'],
-                [sequelize_1.Sequelize.col('assigned.assigned.last_name'), 'assignedLastName'],
-                [sequelize_1.Sequelize.col('assigned.request.profile.name'), 'profileName'],
-                [sequelize_1.Sequelize.col('assigned.request.employment_type'), 'requestEmploymentType'],
+                "id",
+                "amount",
+                "createdAt",
+                "dueDate",
+                "urlInvoice",
+                [
+                    sequelize_1.Sequelize.col("assignment.assigned.profile_img"),
+                    "assignedProfileImg",
+                ],
+                [sequelize_1.Sequelize.col("assignment.assigned.first_name"), "assignedFirstName"],
+                [sequelize_1.Sequelize.col("assignment.assigned.last_name"), "assignedLastName"],
+                [sequelize_1.Sequelize.col("assignment.request.profile.name"), "profileName"],
+                [
+                    sequelize_1.Sequelize.col("assignment.request.employment_type"),
+                    "requestEmploymentType",
+                ],
             ],
         });
         return resul;
+    }
+    async findLastInvoice() {
+        return await invoiceModel_1.default.findOne({
+            order: [["createdAt", "DESC"]],
+        });
     }
     async update(id, data) {
         const record = await invoiceModel_1.default.findByPk(id);

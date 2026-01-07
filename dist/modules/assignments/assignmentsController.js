@@ -17,7 +17,7 @@ const createAssignment = async (req, res) => {
         const record = await assignmentsService.createAssignment(validatedData);
         const reqRecord = await requestService.getRequestById(validatedData.requestId);
         const userRecord = await userService.getUserById(reqRecord.requesterId);
-        mandrill.sendAssignementSuccess(userRecord.email, '', 'Contratación creada con éxito');
+        mandrill.sendAssignementSuccess(userRecord.email, "", "Contratación creada con éxito");
         res.status(201).json(record);
     }
     catch (error) {

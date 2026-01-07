@@ -41,6 +41,7 @@ __decorate([
         type: sequelize_typescript_1.DataType.TEXT,
         allowNull: false,
         defaultValue: "",
+        field: "id_suscription",
     }),
     __metadata("design:type", String)
 ], AssignmentModel.prototype, "idSuscription", void 0);

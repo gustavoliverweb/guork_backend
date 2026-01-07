@@ -16,7 +16,7 @@ export class BunnyService {
 
   private url(path: string): string {
     const p = path.replace(/^\/+/, "");
-    return `https://${this.host}/${this.zone}/${p}`;
+    return `${this.host}/${this.zone}/${p}`;
   }
 
   getPublicUrl(path: string): string | undefined {
@@ -27,9 +27,11 @@ export class BunnyService {
 
   async upload(
     path: string,
-    data: Buffer | string,
+    data: Buffer | string | Uint8Array,
     contentType?: string
-  ): Promise<{ url: string; publicUrl?: string }> {
+  ): Promise<{ url: string; publicUrl?: string; path: string }> {
+    console.log(this.url(path));
+
     const res = await fetch(this.url(path), {
       method: "PUT",
       headers: {
@@ -38,11 +40,18 @@ export class BunnyService {
       },
       body: typeof data === "string" ? data : new Uint8Array(data),
     });
+
+    console.log(res);
     if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
-    return { url: this.url(path), publicUrl: this.getPublicUrl(path) };
+    return {
+      url: this.url(path),
+      publicUrl: this.getPublicUrl(path),
+      path: path,
+    };
   }
 
   async download(path: string): Promise<Buffer> {
+    path = path.replace(this.cdn + "/", "");
     const res = await fetch(this.url(path), {
       method: "GET",
       headers: { AccessKey: this.accessKey },
@@ -53,10 +62,14 @@ export class BunnyService {
   }
 
   async delete(path: string): Promise<void> {
+    path = path.replace(this.cdn + "/", "");
     const res = await fetch(this.url(path), {
       method: "DELETE",
       headers: { AccessKey: this.accessKey },
     });
+
+    console.log(res);
+
     if (!res.ok) throw new Error(`Delete failed: ${res.status}`);
   }
 }

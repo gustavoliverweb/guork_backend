@@ -9,13 +9,21 @@ import { PaginationRequest } from "../../shared/types/paginationRequest";
 import { StripeService } from "../../shared/services/stripeService";
 import { AssignmentsService } from "../assignments/assignmentsService";
 import { InvoicesService } from "../invoices/invoiceService";
-const stripe = require("stripe")(
-  process.env.API_SECRECT_STRIPE
-);
+import ejs from "ejs";
+import puppeteer from "puppeteer-core";
+import { BunnyService } from "../../shared/services/bunnyService";
+import moment from "moment";
+import "moment/locale/es";
+
+const chromium = require("@sparticuz/chromium");
+const stripe = require("stripe")(process.env.API_SECRECT_STRIPE);
 const requestsService = new RequestsService();
 const stripeService = new StripeService();
 const assignmentsService = new AssignmentsService();
 const invoiceService = new InvoicesService();
+
+const bunny: BunnyService = new BunnyService();
+
 export const createRequest = async (req: Request, res: Response) => {
   try {
     console.log(req.body);
@@ -34,6 +42,9 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
   // const endpointSecret = "whsec_afc16ecf0e0428baffbe1d6fc239bf90241fbf431c2ca180a536be2322251991";
   const endpointSecret = process.env.SECRET_WEBHOOK;
   const sig = req.headers["stripe-signature"];
+
+  console.log("stripe de pago");
+
   let event;
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
@@ -44,24 +55,100 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
     return;
   }
   if (event.type === "invoice.payment_succeeded") {
-    const subscriptionId = event.data.object.parent.subscription_details.subscription;
+    console.log("Pago realizado");
+
+    const subscriptionId =
+      event.data.object.parent.subscription_details.subscription;
     const assig = await assignmentsService.getAssignmentBySub(subscriptionId);
-    await invoiceService.createInvoices({
-      amount: event.data.object.amount_paid ? (event.data.object.amount_paid / 100) : 0,
-      assignedId: assig.id,
-      urlInvoice: ''
-    });
+
+    console.log(event.data);
+
+    const date = moment();
+    const dueDate = date.add(1, "month");
+    const amount = event.data.object.amount_paid
+      ? event.data.object.amount_paid / 100
+      : 0;
+    const lastInvoice = await invoiceService.getLastInvoice();
+
+    const purchaseOrder =
+      date.date().toString().padStart(2, "0") +
+      date.month().toString().padStart(2, "0") +
+      date.year().toString() +
+      "-" +
+      ((lastInvoice.purchaseOrder ?? 0) + 1);
+
+    const data: any = {
+      logo: "https://guork-cdn.b-cdn.net/assets/logo.png",
+      issueDate: date.locale("es").format("MMM D, YYYY"),
+      dueDate: dueDate.locale("es").format("MMM D, YYYY"),
+      purchaseOrder: purchaseOrder,
+      balance: amount,
+      quantity: 1,
+      unit: amount,
+      subtotal: amount,
+      taxRate: 0.0,
+      taxAmount: 0.0,
+      total: amount,
+    };
+
+    let urlInvoice = "";
+
+    ejs.renderFile(
+      "./src/assets/invoice-template/invoice.ejs",
+      data,
+      async (err: any, html: string) => {
+        if (err) {
+          console.log("Error al renderizar el template:", err);
+          res.status(500).send({ error: err });
+          return;
+        }
+        let browser = await puppeteer.launch({
+          args: chromium.args,
+          defaultViewport: { width: 1280, height: 800, deviceScaleFactor: 1 },
+          executablePath: await chromium.executablePath(),
+          headless: chromium.headless,
+        });
+
+        let page = await browser.newPage();
+
+        await page.setContent(html);
+
+        const pdfBuffer = await page.pdf({
+          format: "A4",
+          printBackground: true,
+        });
+
+        const fileName = `invoice-${Date.now()}.pdf`;
+
+        const response = await bunny.upload(
+          `invoices/${assig.id}/${fileName}`,
+          pdfBuffer,
+          "application/pdf"
+        );
+
+        urlInvoice = response.publicUrl || "";
+
+        await invoiceService.createInvoices({
+          amount: event.data.object.amount_paid
+            ? event.data.object.amount_paid / 100
+            : 0,
+          assignmentId: assig.id,
+          purchaseOrder: (lastInvoice.purchaseOrder ?? 0) + 1,
+          urlInvoice: urlInvoice,
+        });
+      }
+    );
+
     res.status(200).send(`success`);
     return;
   }
   if (event.type === "invoice.payment_failed") {
-    const subscriptionId = event.data.object.parent.subscription_details.subscription;
+    const subscriptionId =
+      event.data.object.parent.subscription_details.subscription;
     console.log(subscriptionId);
     res.status(200).send(`Webhook Error pay: `);
     return;
   }
-
-
 };
 export const createIntentPayStripe = async (req: Request, res: Response) => {
   try {
@@ -79,7 +166,9 @@ export const createSuscriptionStripe = async (req: Request, res: Response) => {
   try {
     console.log(req.body);
     const record = await stripeService.createSuscription(req.body);
-    await assignmentsService.updateAssignment(req.body.idAssignamed, { idSuscription: record.idSuscription });
+    await assignmentsService.updateAssignment(req.body.idAssignamed, {
+      idSuscription: record.idSuscription,
+    });
     res.status(201).json(record);
   } catch (error: any) {
     if (error instanceof ZodError) {

@@ -123,7 +123,12 @@ router.get("/:id", authMiddleware, userController.getUserById);
  *       404:
  *         description: User not found
  */
-router.put("/:id", authMiddleware, userController.updateUser);
+router.put(
+  "/:id",
+  authMiddleware,
+  upload.single("image"),
+  userController.updateUser
+);
 
 /**
  * @swagger

@@ -25,8 +25,20 @@ export default class ProfileModel extends Model {
   @Column({ type: DataType.TEXT, allowNull: true })
   descriptions?: string;
 
-  @Column({ type: DataType.DECIMAL(10, 2), allowNull: false, defaultValue: 0.0 })
+  @Column({
+    type: DataType.FLOAT,
+    allowNull: false,
+    defaultValue: 0.0,
+  })
   amount!: number;
+
+  @Column({
+    type: DataType.FLOAT,
+    allowNull: false,
+    defaultValue: 0.0,
+    field: "part_time_amount",
+  })
+  partTimeAmount!: number;
 
   @BelongsToMany(() => UserModel, () => UserProfileModel)
   users!: UserModel[];

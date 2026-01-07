@@ -14,7 +14,7 @@ export const createUserSchema = z.object({
   dniImg: z.string().optional(),
   profileImg: z.string().optional(),
   role: z.enum(["user", "admin", "expert"]).optional(),
-  profiles: z.array(z.string().uuid()).optional(),
+  profiles: z.string().optional(),
 });
 
 // Schema de validación para actualización de usuario
@@ -31,7 +31,7 @@ export const updateUserSchema = z.object({
   dniImg: z.string().optional(),
   profileImg: z.string().optional(),
   role: z.enum(["user", "admin", "expert"]).optional(),
-  profiles: z.array(z.string().uuid()).optional(),
+  profiles: z.string().optional(),
 });
 
 // Schema de validación para login

@@ -27,12 +27,15 @@ export default class AssignmentModel extends Model {
     defaultValue: "in-progress",
   })
   status!: string;
+
   @Column({
     type: DataType.TEXT,
     allowNull: false,
     defaultValue: "",
+    field: "id_suscription",
   })
   idSuscription!: string;
+
   @ForeignKey(() => UserModel)
   @Column({ type: DataType.UUID, allowNull: true, field: "assigned_id" })
   assignedId?: string;

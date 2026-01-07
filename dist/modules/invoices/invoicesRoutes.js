@@ -4,5 +4,7 @@ const express_1 = require("express");
 const invoiceController_1 = require("./invoiceController");
 const authMiddleware_1 = require("../../shared/middlewares/authMiddleware");
 const router = (0, express_1.Router)();
+router.get("/", authMiddleware_1.authMiddleware, invoiceController_1.getAllInvoices);
+router.post("/download", authMiddleware_1.authMiddleware, invoiceController_1.downloadInvoice);
 router.get("/byRequest/:id", authMiddleware_1.authMiddleware, invoiceController_1.getInvoicesByRequesterId);
 exports.default = router;

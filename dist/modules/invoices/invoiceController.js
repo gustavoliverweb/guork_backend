@@ -1,10 +1,30 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getInvoicesByRequesterId = exports.createAssignment = void 0;
+exports.downloadInvoice = exports.getInvoicesByRequesterId = exports.createAssignment = exports.getAllInvoices = void 0;
 const invoiceZodSchema_1 = require("./schemas/invoiceZodSchema");
 const zod_1 = require("zod");
 const invoiceService_1 = require("./invoiceService");
+const bunnyService_1 = require("../../shared/services/bunnyService");
 const invoicesService = new invoiceService_1.InvoicesService();
+const bunny = new bunnyService_1.BunnyService();
+const getAllInvoices = async (req, res) => {
+    try {
+        const pagination = {
+            page: Number.parseInt(req.query.page || "1", 10),
+            pageSize: Number.parseInt(req.query.pageSize || "10", 10),
+            sortBy: req.query.sortBy || undefined,
+            sortOrder: req.query.sortOrder,
+            search: req.query.search || undefined,
+            status: req.query.status || undefined,
+        };
+        const result = await invoicesService.getAllInvoices(pagination);
+        res.json(result);
+    }
+    catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+exports.getAllInvoices = getAllInvoices;
 const createAssignment = async (req, res) => {
     try {
         const validatedData = invoiceZodSchema_1.invoiceSchema.parse(req.body);
@@ -30,3 +50,16 @@ const getInvoicesByRequesterId = async (req, res) => {
     }
 };
 exports.getInvoicesByRequesterId = getInvoicesByRequesterId;
+const downloadInvoice = async (req, res) => {
+    const { file } = req.body;
+    try {
+        const response = await bunny.download(file);
+        return res.status(200).send(response);
+    }
+    catch (error) {
+        return res.status(500).send({
+            response: "Ha ocurrido un error descargando el archivo: " + error,
+        });
+    }
+};
+exports.downloadInvoice = downloadInvoice;
