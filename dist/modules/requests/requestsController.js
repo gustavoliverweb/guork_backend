@@ -84,7 +84,21 @@ const handleStripeWebhook = async (req, res) => {
             total: amount,
         };
         let urlInvoice = "";
-        ejs_1.default.renderFile(path_1.default.resolve(__dirname, "../../assets/invoice-template/invoice.ejs"), data, async (err, html) => {
+        // // Determinar ruta del template compatible con local y Vercel
+        // let templatePath = path.resolve(
+        //   __dirname,
+        //   "../../assets/invoice-template/invoice.ejs"
+        // );
+        // const fs = require("fs");
+        // if (!fs.existsSync(templatePath)) {
+        //   // En Vercel o si no existe en dist, buscar en src/assets relativo al root
+        //   templatePath = path.join(
+        //     process.cwd(),
+        //     "src/assets/invoice-template/invoice.ejs"
+        //   );
+        // }
+        const templatePath = path_1.default.join(process.cwd(), 'dist', 'assets', 'invoice-template', 'invoice.ejs');
+        ejs_1.default.renderFile(templatePath, data, async (err, html) => {
             if (err) {
                 console.log("Error al renderizar el template:", err);
                 res.status(500).send({ error: err });

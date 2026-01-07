@@ -95,51 +95,61 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
 
     let urlInvoice = "";
 
-    ejs.renderFile(
-      path.resolve(__dirname, "../../assets/invoice-template/invoice.ejs"),
-      data,
-      async (err: any, html: string) => {
-        if (err) {
-          console.log("Error al renderizar el template:", err);
-          res.status(500).send({ error: err });
-          return;
-        }
-        let browser = await puppeteer.launch({
-          args: chromium.args,
-          defaultViewport: { width: 1280, height: 800, deviceScaleFactor: 1 },
-          executablePath: await chromium.executablePath(),
-          headless: chromium.headless,
-        });
-
-        let page = await browser.newPage();
-
-        await page.setContent(html);
-
-        const pdfBuffer = await page.pdf({
-          format: "A4",
-          printBackground: true,
-        });
-
-        const fileName = `invoice-${Date.now()}.pdf`;
-
-        const response = await bunny.upload(
-          `invoices/${assig.id}/${fileName}`,
-          pdfBuffer,
-          "application/pdf"
-        );
-
-        urlInvoice = response.publicUrl || "";
-
-        await invoiceService.createInvoices({
-          amount: event.data.object.amount_paid
-            ? event.data.object.amount_paid / 100
-            : 0,
-          assignmentId: assig.id,
-          purchaseOrder: (lastInvoice.purchaseOrder ?? 0) + 1,
-          urlInvoice: urlInvoice,
-        });
+    // // Determinar ruta del template compatible con local y Vercel
+    // let templatePath = path.resolve(
+    //   __dirname,
+    //   "../../assets/invoice-template/invoice.ejs"
+    // );
+    // const fs = require("fs");
+    // if (!fs.existsSync(templatePath)) {
+    //   // En Vercel o si no existe en dist, buscar en src/assets relativo al root
+    //   templatePath = path.join(
+    //     process.cwd(),
+    //     "src/assets/invoice-template/invoice.ejs"
+    //   );
+    // }
+    const templatePath = path.join(process.cwd(), 'dist', 'assets', 'invoice-template', 'invoice.ejs');
+    ejs.renderFile(templatePath, data, async (err: any, html: string) => {
+      if (err) {
+        console.log("Error al renderizar el template:", err);
+        res.status(500).send({ error: err });
+        return;
       }
-    );
+      let browser = await puppeteer.launch({
+        args: chromium.args,
+        defaultViewport: { width: 1280, height: 800, deviceScaleFactor: 1 },
+        executablePath: await chromium.executablePath(),
+        headless: chromium.headless,
+      });
+
+      let page = await browser.newPage();
+
+      await page.setContent(html);
+
+      const pdfBuffer = await page.pdf({
+        format: "A4",
+        printBackground: true,
+      });
+
+      const fileName = `invoice-${Date.now()}.pdf`;
+
+      const response = await bunny.upload(
+        `invoices/${assig.id}/${fileName}`,
+        pdfBuffer,
+        "application/pdf"
+      );
+
+      urlInvoice = response.publicUrl || "";
+
+      await invoiceService.createInvoices({
+        amount: event.data.object.amount_paid
+          ? event.data.object.amount_paid / 100
+          : 0,
+        assignmentId: assig.id,
+        purchaseOrder: (lastInvoice.purchaseOrder ?? 0) + 1,
+        urlInvoice: urlInvoice,
+      });
+    });
 
     res.status(200).send(`success`);
     return;
