@@ -64,6 +64,7 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
     console.log(event.data);
 
     const date = moment();
+    const issueDate = moment();
     const dueDate = date.add(1, "month");
     const amount = event.data.object.amount_paid
       ? event.data.object.amount_paid / 100
@@ -79,7 +80,7 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
 
     const data: any = {
       logo: "https://guork-cdn.b-cdn.net/assets/logo.png",
-      issueDate: date.locale("es").format("MMM D, YYYY"),
+      issueDate: issueDate.locale("es").format("MMM D, YYYY"),
       dueDate: dueDate.locale("es").format("MMM D, YYYY"),
       purchaseOrder: purchaseOrder,
       balance: amount,

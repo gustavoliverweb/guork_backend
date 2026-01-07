@@ -58,6 +58,7 @@ const handleStripeWebhook = async (req, res) => {
         const assig = await assignmentsService.getAssignmentBySub(subscriptionId);
         console.log(event.data);
         const date = (0, moment_1.default)();
+        const issueDate = (0, moment_1.default)();
         const dueDate = date.add(1, "month");
         const amount = event.data.object.amount_paid
             ? event.data.object.amount_paid / 100
@@ -70,7 +71,7 @@ const handleStripeWebhook = async (req, res) => {
             ((lastInvoice.purchaseOrder ?? 0) + 1);
         const data = {
             logo: "https://guork-cdn.b-cdn.net/assets/logo.png",
-            issueDate: date.locale("es").format("MMM D, YYYY"),
+            issueDate: issueDate.locale("es").format("MMM D, YYYY"),
             dueDate: dueDate.locale("es").format("MMM D, YYYY"),
             purchaseOrder: purchaseOrder,
             balance: amount,
