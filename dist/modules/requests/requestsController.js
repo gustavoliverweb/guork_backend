@@ -97,7 +97,7 @@ const handleStripeWebhook = async (req, res) => {
         //     "src/assets/invoice-template/invoice.ejs"
         //   );
         // }
-        const templatePath = path_1.default.join(process.cwd(), 'dist', 'assets', 'invoice-template', 'invoice.ejs');
+        const templatePath = path_1.default.join(process.cwd(), "assets", "invoice-template", "invoice.ejs");
         ejs_1.default.renderFile(templatePath, data, async (err, html) => {
             if (err) {
                 console.log("Error al renderizar el template:", err);
