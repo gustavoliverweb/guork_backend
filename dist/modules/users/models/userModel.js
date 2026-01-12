@@ -118,6 +118,22 @@ __decorate([
     }),
     __metadata("design:type", Date)
 ], UserModel.prototype, "updatedAt", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.TEXT, allowNull: true, field: "page_web" }),
+    __metadata("design:type", String)
+], UserModel.prototype, "pageWeb", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.TEXT, allowNull: true, field: "name_company" }),
+    __metadata("design:type", String)
+], UserModel.prototype, "nameCompany", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.TEXT, allowNull: true, field: "nif" }),
+    __metadata("design:type", String)
+], UserModel.prototype, "nif", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.TEXT, allowNull: true, field: "email_company" }),
+    __metadata("design:type", String)
+], UserModel.prototype, "emailCompany", void 0);
 UserModel = __decorate([
     (0, sequelize_typescript_1.Table)({ tableName: "users", timestamps: false, underscored: true })
 ], UserModel);

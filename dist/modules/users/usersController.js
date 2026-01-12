@@ -77,6 +77,7 @@ class UserController {
                     const uploadResult = await this.bunny.upload(`users/profile-picture/${Date.now()}_${req.file.originalname}`, req.file.buffer, req.file.mimetype);
                     validatedData.profileImg = uploadResult.publicUrl;
                 }
+                console.log(validatedData);
                 const user = await this.userService.updateUser(id, validatedData);
                 res.status(200).json(user);
             }

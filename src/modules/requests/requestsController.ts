@@ -15,12 +15,14 @@ import puppeteer from "puppeteer-core";
 import { BunnyService } from "../../shared/services/bunnyService";
 import moment from "moment";
 import "moment/locale/es";
+import { UserService } from "../users/usersService";
 
 const chromium = require("@sparticuz/chromium");
 const stripe = require("stripe")(process.env.API_SECRECT_STRIPE);
 const requestsService = new RequestsService();
 const stripeService = new StripeService();
 const assignmentsService = new AssignmentsService();
+const userService = new UserService();
 const invoiceService = new InvoicesService();
 
 const bunny: BunnyService = new BunnyService();
@@ -61,7 +63,8 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
     const subscriptionId =
       event.data.object.parent.subscription_details.subscription;
     const assig = await assignmentsService.getAssignmentBySub(subscriptionId);
-
+    const resq = await requestsService.getRequestById(assig.requestId);
+    const userRecord = await userService.getUserById(resq.requesterId);
     console.log(event.data);
 
     const date = moment();
@@ -91,6 +94,12 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
       taxRate: 0.0,
       taxAmount: 0.0,
       total: amount,
+      address: userRecord.address ?? '',
+      emailCompany: userRecord.emailCompany ?? '',
+      nameCompany: userRecord.nameCompany ?? '',
+      nif: userRecord.nif ?? '',
+      pageWeb: userRecord.pageWeb ?? '',
+
     };
 
     let urlInvoice = "";

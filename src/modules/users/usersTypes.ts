@@ -14,13 +14,17 @@ export interface User {
   address?: string;
   postalCode?: string;
   profileImg?: string;
+  pageWeb?: string;
+  nameCompany?: string;
+  nif?: string;
+  emailCompany?: string;
   profiles?: Profile[];
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 export interface UserCreation
-  extends Omit<User, "id" | "createdAt" | "updatedAt" | "profiles"> {}
+  extends Omit<User, "id" | "createdAt" | "updatedAt" | "profiles"> { }
 
 export interface UserResponse
-  extends Omit<User, "password" | "createdAt" | "updatedAt"> {}
+  extends Omit<User, "password" | "createdAt" | "updatedAt"> { }

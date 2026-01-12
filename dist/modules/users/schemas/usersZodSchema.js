@@ -31,6 +31,10 @@ exports.updateUserSchema = zod_1.z.object({
     postalCode: zod_1.z.string().optional(),
     dniImg: zod_1.z.string().optional(),
     profileImg: zod_1.z.string().optional(),
+    nameCompany: zod_1.z.string().optional(),
+    emailCompany: zod_1.z.string().optional(),
+    nif: zod_1.z.string().optional(),
+    pageWeb: zod_1.z.string().optional(),
     role: zod_1.z.enum(["user", "admin", "expert"]).optional(),
     profiles: zod_1.z.string().optional(),
 });

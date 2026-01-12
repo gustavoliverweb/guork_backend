@@ -30,6 +30,10 @@ export const updateUserSchema = z.object({
   postalCode: z.string().optional(),
   dniImg: z.string().optional(),
   profileImg: z.string().optional(),
+  nameCompany: z.string().optional(),
+  emailCompany: z.string().optional(),
+  nif: z.string().optional(),
+  pageWeb: z.string().optional(),
   role: z.enum(["user", "admin", "expert"]).optional(),
   profiles: z.string().optional(),
 });

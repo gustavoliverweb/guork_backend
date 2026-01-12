@@ -16,11 +16,13 @@ const puppeteer_core_1 = __importDefault(require("puppeteer-core"));
 const bunnyService_1 = require("../../shared/services/bunnyService");
 const moment_1 = __importDefault(require("moment"));
 require("moment/locale/es");
+const usersService_1 = require("../users/usersService");
 const chromium = require("@sparticuz/chromium");
 const stripe = require("stripe")(process.env.API_SECRECT_STRIPE);
 const requestsService = new requestsService_1.RequestsService();
 const stripeService = new stripeService_1.StripeService();
 const assignmentsService = new assignmentsService_1.AssignmentsService();
+const userService = new usersService_1.UserService();
 const invoiceService = new invoiceService_1.InvoicesService();
 const bunny = new bunnyService_1.BunnyService();
 const createRequest = async (req, res) => {
@@ -57,6 +59,8 @@ const handleStripeWebhook = async (req, res) => {
         console.log("Pago realizado");
         const subscriptionId = event.data.object.parent.subscription_details.subscription;
         const assig = await assignmentsService.getAssignmentBySub(subscriptionId);
+        const resq = await requestsService.getRequestById(assig.requestId);
+        const userRecord = await userService.getUserById(resq.requesterId);
         console.log(event.data);
         const date = (0, moment_1.default)();
         const issueDate = (0, moment_1.default)();
@@ -82,6 +86,11 @@ const handleStripeWebhook = async (req, res) => {
             taxRate: 0.0,
             taxAmount: 0.0,
             total: amount,
+            address: userRecord.address ?? '',
+            emailCompany: userRecord.emailCompany ?? '',
+            nameCompany: userRecord.nameCompany ?? '',
+            nif: userRecord.nif ?? '',
+            pageWeb: userRecord.pageWeb ?? '',
         };
         let urlInvoice = "";
         // // Determinar ruta del template compatible con local y Vercel

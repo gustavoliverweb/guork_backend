@@ -88,6 +88,15 @@ export default class UserModel extends Model {
   })
   updatedAt!: Date;
 
+  @Column({ type: DataType.TEXT, allowNull: true, field: "page_web" })
+  pageWeb?: string;
+  @Column({ type: DataType.TEXT, allowNull: true, field: "name_company" })
+  nameCompany?: string;
+  @Column({ type: DataType.TEXT, allowNull: true, field: "nif" })
+  nif?: string;
+  @Column({ type: DataType.TEXT, allowNull: true, field: "email_company" })
+  emailCompany?: string;
+
   toJSON() {
     const values = { ...this.get() } as any;
     delete values.password;

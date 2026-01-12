@@ -101,6 +101,7 @@ export class UserController {
         );
         validatedData.profileImg = uploadResult.publicUrl;
       }
+      console.log(validatedData);
       const user = await this.userService.updateUser(id, validatedData);
       res.status(200).json(user);
     } catch (error) {
