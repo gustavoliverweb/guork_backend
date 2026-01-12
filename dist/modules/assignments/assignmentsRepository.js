@@ -99,6 +99,7 @@ class AssignmentsRepository {
             },
             attributes: [
                 "id",
+                'requestId',
                 [sequelize_1.Sequelize.col("assigned.profile_img"), "assignedProfileImg"],
                 [sequelize_1.Sequelize.col("assigned.first_name"), "assignedFirstName"],
                 [sequelize_1.Sequelize.col("assigned.last_name"), "assignedLastName"],

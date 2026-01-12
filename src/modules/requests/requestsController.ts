@@ -63,6 +63,7 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
     const subscriptionId =
       event.data.object.parent.subscription_details.subscription;
     const assig = await assignmentsService.getAssignmentBySub(subscriptionId);
+    console.log(assig);
     const resq = await requestsService.getRequestById(assig.requestId);
     const userRecord = await userService.getUserById(resq.requesterId);
     console.log(event.data);
