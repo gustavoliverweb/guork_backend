@@ -43,7 +43,8 @@ export const createRequest = async (req: Request, res: Response) => {
 export const handleStripeWebhook = async (req: Request, res: Response) => {
   // This is your Stripe CLI webhook secret for testing your endpoint locally.
   // const endpointSecret = "whsec_afc16ecf0e0428baffbe1d6fc239bf90241fbf431c2ca180a536be2322251991";
-  const endpointSecret = process.env.SECRET_WEBHOOK;
+  // const endpointSecret = 'whsec_qHmGW7cmSaohj6XMpluQdGPPZMnfXIK4';
+  const endpointSecret = process.env.SECRET_WEBHOOK_PROD;
   const sig = req.headers["stripe-signature"];
 
   console.log("stripe de pago");
