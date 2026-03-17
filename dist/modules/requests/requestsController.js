@@ -138,9 +138,9 @@ const handleStripeWebhook = async (req, res) => {
                 purchaseOrder: (lastInvoice.purchaseOrder ?? 0) + 1,
                 urlInvoice: urlInvoice,
             });
+            res.status(200).send(`success`);
+            return;
         });
-        res.status(200).send(`success`);
-        return;
     }
     if (event.type === "invoice.payment_failed") {
         const subscriptionId = event.data.object.parent.subscription_details.subscription;
