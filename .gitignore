@@ -1,5 +1,6 @@
 # Node
 node_modules/
+src/config/guork-f47e7-firebase-adminsdk-fbsvc-3e7a250b8d.json
 # Env
 .env
 .env.*

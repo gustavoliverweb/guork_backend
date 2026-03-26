@@ -1,14 +1,21 @@
 import * as admin from 'firebase-admin';
 import * as path from 'path';
 // Usa import dinámico o path absoluto según tu config de TS
-const serviceAccount = require(path.resolve(__dirname, "../../config/guork-f47e7-firebase-adminsdk-fbsvc-10b7643e28.json"));
-
+import 'dotenv/config';
 export default class FirebasePushService {
 
     constructor() {
         if (admin.apps.length === 0) {
+            console.log(process.env.JSON_ADMIN_FIREBASE!)
+            var keyJson = JSON.parse(process.env.JSON_ADMIN_FIREBASE!);
+
+            if (keyJson.private_key) {
+                keyJson.private_key = keyJson.private_key.replace(/\\n/g, '\n') // Reemplaza el texto "\n" por un salto de línea real
+                    .replace(/"/g, '');
+            }
+            console.log(keyJson);
             admin.initializeApp({
-                credential: admin.credential.cert(serviceAccount)
+                credential: admin.credential.cert(keyJson)
             });
             console.log("Firebase Admin inicializado correctamente.");
         }
