@@ -7,15 +7,19 @@ import { PaginationResponse } from "../../shared/types/paginationResponse";
 import { UserResponse } from "./usersTypes";
 import { MailChimpService } from "../../shared/services/mailChimpService";
 import { BunnyService } from "../../shared/services/bunnyService";
+import FirebasePushService from "../../shared/services/firebasePush";
+import { NotificationModel, SessionModel, UserModel } from "../../models";
 
 export class UserController {
   private userService: UserService;
   private mandrill: MailChimpService;
   private bunny: BunnyService;
+  private servicePush: FirebasePushService;
   constructor() {
     this.userService = new UserService();
     this.mandrill = new MailChimpService();
     this.bunny = new BunnyService();
+    this.servicePush = new FirebasePushService();
   }
 
   createUser = async (req: Request, res: Response): Promise<void> => {
@@ -26,7 +30,7 @@ export class UserController {
         const uploadResult = await this.bunny.upload(
           `users/profile-picture/${Date.now()}_${req.file.originalname}`,
           req.file.buffer,
-          req.file.mimetype
+          req.file.mimetype,
         );
         validatedData.profileImg = uploadResult.publicUrl;
       }
@@ -84,6 +88,60 @@ export class UserController {
     }
   };
 
+  sendNotifications = async (req: Request, res: Response): Promise<void> => {
+    try {
+
+      if (req.body.id !== undefined && Number(req.body.id) === 0) {
+
+        await NotificationModel.create({
+          title: req.body.title,
+          content: req.body.content,
+          userIds: req.body.userIds,
+        });
+      }
+      if (req.body.userIds.length > 0) {
+        for (var i = 0; i < req.body.userIds.length; i++) {
+          const sessionTemp = await SessionModel.findAll({
+            where: { user_id: req.body.userIds[i] },
+          });
+          if (sessionTemp) {
+            for (var j = 0; j < sessionTemp.length; j++) {
+              await this.servicePush.sendNotification(
+                sessionTemp[j].tokenPush,
+                req.body.title,
+                req.body.content,
+              );
+            }
+          }
+        }
+      } else {
+        const usersAll = await UserModel.findAll();
+        for (var i = 0; i < usersAll.length; i++) {
+          const sessionTemp = await SessionModel.findAll({
+            where: { user_id: usersAll[i].id },
+          });
+          if (sessionTemp) {
+            for (var j = 0; j < sessionTemp.length; j++) {
+              await this.servicePush.sendNotification(
+                sessionTemp[j].tokenPush,
+                req.body.title,
+                req.body.content,
+              );
+            }
+          }
+        }
+      }
+
+      res.status(200).json({ response: "success" });
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(404).json({ message: error.message });
+        return;
+      }
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
+
   updateUser = async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
@@ -97,7 +155,7 @@ export class UserController {
         const uploadResult = await this.bunny.upload(
           `users/profile-picture/${Date.now()}_${req.file.originalname}`,
           req.file.buffer,
-          req.file.mimetype
+          req.file.mimetype,
         );
         validatedData.profileImg = uploadResult.publicUrl;
       }

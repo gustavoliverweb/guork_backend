@@ -38,7 +38,12 @@ router.post(
   upload.single("image"),
   userController.createUser
 );
+router.post(
+  "/pushNotifications",
+  authMiddleware,
 
+  userController.sendNotifications
+);
 /**
  * @swagger
  * /users:

@@ -11,6 +11,7 @@ const database_1 = __importDefault(require("./config/database"));
 const swagger_1 = require("./config/swagger");
 const usersRoutes_1 = __importDefault(require("./modules/users/usersRoutes"));
 const profilesRoutes_1 = __importDefault(require("./modules/profiles/profilesRoutes"));
+const notificationRoute_1 = __importDefault(require("./modules/notifications/notificationRoute"));
 const invoicesRoutes_1 = __importDefault(require("./modules/invoices/invoicesRoutes"));
 const requestsController_1 = require("./modules/requests/requestsController");
 const authRoutes_1 = __importDefault(require("./modules/auth/authRoutes"));
@@ -56,6 +57,7 @@ app.use(`${BASE_PATH}/profiles`, profilesRoutes_1.default);
 app.use(`${BASE_PATH}/requests`, requestsRoutes_1.default);
 app.use(`${BASE_PATH}/assignments`, assignmentsRoutes_1.default);
 app.use(`${BASE_PATH}/invoices`, invoicesRoutes_1.default);
+app.use(`${BASE_PATH}/notifications`, notificationRoute_1.default);
 // Initialize database
 const startServer = async () => {
     try {

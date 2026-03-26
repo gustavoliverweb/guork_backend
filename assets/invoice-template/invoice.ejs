@@ -282,7 +282,7 @@
               padding: 10px 12px;
             ">
           <div class="label">Saldo Adeudado:</div>
-          <div class="value">USD <%= balance %>
+          <div class="value">EUR <%= balance %>
           </div>
         </div>
       </div>
@@ -307,9 +307,9 @@
           <td class="right">
             <%= quantity %>
           </td>
-          <td class="right w-15">USD <%= unit %>
+          <td class="right w-15">EUR <%= unit %>
           </td>
-          <td class="right w-15">USD <%= subtotal %>
+          <td class="right w-15">EUR <%= subtotal %>
           </td>
         </tr>
       </tbody>
@@ -319,17 +319,17 @@
       <div class="summary">
         <div class="row">
           <div class="label">Subtotal:</div>
-          <div>USD <%= subtotal %>
+          <div>EUR <%= subtotal %>
           </div>
         </div>
         <div class="row">
           <div class="label">Impuesto (<%= taxRate %>%):</div>
-          <div>USD <%= taxAmount %>
+          <div>EUR <%= taxAmount %>
           </div>
         </div>
         <div class="row total">
           <div>Total:</div>
-          <div>USD <%= total %>
+          <div>EUR <%= total %>
           </div>
         </div>
       </div>

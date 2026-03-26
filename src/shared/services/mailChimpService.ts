@@ -54,7 +54,13 @@ export class MailChimpService {
     var mergeVars: { name: string, content: string }[] = [];
     await this.sendTemplate(template, toEmail, subject, mergeVars);
   }
-
+  async sendEmailSampleByUsers(
+    toEmail: string,
+    text: string,
+    subject = "Registro éxitoso",
+  ) {
+    await this.sendEmailSample(text, toEmail, subject, []);
+  }
   async sendAssignementSuccess(
     toEmail: string,
     resetLink: string,
@@ -84,6 +90,29 @@ export class MailChimpService {
     };
 
     const res = await mailchimp.messages.sendTemplate(payload);
+    console.log(res);
+    return await {
+      res: res
+    };
+  }
+  private async sendEmailSample(
+    text: string,
+    toEmail: string,
+    subject: string,
+    mergeVars: Array<{ name: string, content: string }>
+  ) {
+    const payload: any = {
+      message: {
+        from_email: this.fromEmail,
+        from_name: this.fromName,
+        text: text,
+        to: [{ email: toEmail, type: "to" }],
+        subject,
+        global_merge_vars: mergeVars,
+      },
+    };
+
+    const res = await mailchimp.messages.send(payload);
     console.log(res);
     return await {
       res: res

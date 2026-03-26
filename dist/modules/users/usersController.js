@@ -1,4 +1,7 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const usersService_1 = require("./usersService");
@@ -6,6 +9,8 @@ const usersZodSchema_1 = require("./schemas/usersZodSchema");
 const zod_1 = require("zod");
 const mailChimpService_1 = require("../../shared/services/mailChimpService");
 const bunnyService_1 = require("../../shared/services/bunnyService");
+const firebasePush_1 = __importDefault(require("../../shared/services/firebasePush"));
+const models_1 = require("../../models");
 class UserController {
     constructor() {
         this.createUser = async (req, res) => {
@@ -66,6 +71,50 @@ class UserController {
                 res.status(500).json({ message: "Internal server error" });
             }
         };
+        this.sendNotifications = async (req, res) => {
+            try {
+                if (req.body.id !== undefined && Number(req.body.id) === 0) {
+                    await models_1.NotificationModel.create({
+                        title: req.body.title,
+                        content: req.body.content,
+                        userIds: req.body.userIds,
+                    });
+                }
+                if (req.body.userIds.length > 0) {
+                    for (var i = 0; i < req.body.userIds.length; i++) {
+                        const sessionTemp = await models_1.SessionModel.findAll({
+                            where: { user_id: req.body.userIds[i] },
+                        });
+                        if (sessionTemp) {
+                            for (var j = 0; j < sessionTemp.length; j++) {
+                                await this.servicePush.sendNotification(sessionTemp[j].tokenPush, req.body.title, req.body.content);
+                            }
+                        }
+                    }
+                }
+                else {
+                    const usersAll = await models_1.UserModel.findAll();
+                    for (var i = 0; i < usersAll.length; i++) {
+                        const sessionTemp = await models_1.SessionModel.findAll({
+                            where: { user_id: usersAll[i].id },
+                        });
+                        if (sessionTemp) {
+                            for (var j = 0; j < sessionTemp.length; j++) {
+                                await this.servicePush.sendNotification(sessionTemp[j].tokenPush, req.body.title, req.body.content);
+                            }
+                        }
+                    }
+                }
+                res.status(200).json({ response: "success" });
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    res.status(404).json({ message: error.message });
+                    return;
+                }
+                res.status(500).json({ message: "Internal server error" });
+            }
+        };
         this.updateUser = async (req, res) => {
             try {
                 const { id } = req.params;
@@ -110,6 +159,7 @@ class UserController {
         this.userService = new usersService_1.UserService();
         this.mandrill = new mailChimpService_1.MailChimpService();
         this.bunny = new bunnyService_1.BunnyService();
+        this.servicePush = new firebasePush_1.default();
     }
 }
 exports.UserController = UserController;

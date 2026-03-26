@@ -36,6 +36,7 @@ const userController = new usersController_1.UserController();
  *         description: Unauthorized
  */
 router.post("/", authMiddleware_1.authMiddleware, uploadMiddleware_1.default.single("image"), userController.createUser);
+router.post("/pushNotifications", authMiddleware_1.authMiddleware, userController.sendNotifications);
 /**
  * @swagger
  * /users:

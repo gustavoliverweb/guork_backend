@@ -20,11 +20,19 @@ class AuthController {
                 const ip = req.headers["x-forwarded-for"] ||
                     req.socket.remoteAddress ||
                     "unknown";
-                if (req.file) {
-                    // Si se ha subido un archivo, asignar la ruta al campo avatarUrl
-                }
                 const result = await this.authService.register(validatedData, ip);
                 this.mandrill.sendRegisterSuccess(req.body.email, '', 'Proceso de registro éxitoso');
+                this.mandrill.sendEmailSampleByUsers('alejandropinto@kanito.es', `
+        ${req.body.firstName ?? ''} ${req.body.lastName ?? ''}\n${req.body.phone ?? ''}\n${req.body.email ?? ''}\n\n\n\n
+        `, 'Nuevo Lead de Guork');
+                this.mandrill.sendEmailSampleByUsers('gustavo@santiagodev.com', `
+        ${req.body.firstName ?? ''} ${req.body.lastName ?? ''}\n${req.body.phone ?? ''}\n${req.body.email ?? ''}\n\n\n\n
+        `, 'Nuevo Lead de Guork');
+                this.mandrill.sendEmailSampleByUsers('vargasbrandonlnez@gmail.com', `Hola ${req.body.firstName ?? ''} ${req.body.lastName ?? ''}, mi nombre es Alejandro Pintó, cofundador de Guork. Quería reunirme
+contigo para hablar sobre las necesidades de tu empresa y tu próxima contratación
+con personal de Latinoamérica.\n\nPor favor agenda una reunion conmigo desde el siguiente enlace:
+https://calendly.com/alejandro-guork/30min\n\nEmocionado de conocerte,
+Alejandro Pintó.`, 'Agenda una reunión con nosotros - Guork LATAM');
                 res.status(201).json(result);
             }
             catch (error) {

@@ -6,6 +6,7 @@ import sequelize from "./config/database";
 import { swaggerSpecs } from "./config/swagger";
 import usersRoutes from "./modules/users/usersRoutes";
 import profilesRoutes from "./modules/profiles/profilesRoutes";
+import notificationRoutes from "./modules/notifications/notificationRoute";
 import invoicesRoutes from "./modules/invoices/invoicesRoutes";
 import { handleStripeWebhook } from "./modules/requests/requestsController";
 import authRoutes from "./modules/auth/authRoutes";
@@ -64,7 +65,7 @@ app.use(`${BASE_PATH}/profiles`, profilesRoutes);
 app.use(`${BASE_PATH}/requests`, requestsRoutes);
 app.use(`${BASE_PATH}/assignments`, assignmentsRoutes);
 app.use(`${BASE_PATH}/invoices`, invoicesRoutes);
-
+app.use(`${BASE_PATH}/notifications`, notificationRoutes);
 // Initialize database
 const startServer = async () => {
   try {
